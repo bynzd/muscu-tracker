@@ -7,331 +7,694 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, sans-serif; background: #111; color: #eee; min-height: 100vh; }
-
     nav { display: flex; background: #1a1a1a; border-bottom: 1px solid #2a2a2a; position: sticky; top: 0; z-index: 10; }
     nav button { flex: 1; padding: 14px 8px; background: none; border: none; border-bottom: 2px solid transparent; color: #666; font-size: 14px; cursor: pointer; }
     nav button.active { color: #fff; border-bottom-color: #4ade80; }
-
-    main { padding: 16px; max-width: 560px; margin: 0 auto; }
+    main { padding: 16px; max-width: 640px; margin: 0 auto; }
     section { display: none; }
     section.active { display: block; }
-
-    h2 { font-size: 17px; font-weight: 700; color: #4ade80; margin-bottom: 16px; }
+    h2 { font-size: 18px; font-weight: 700; color: #4ade80; margin-bottom: 16px; }
     h3 { font-size: 13px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: .05em; margin: 24px 0 10px; }
-
     .form-group { margin-bottom: 11px; }
     label { display: block; font-size: 12px; color: #777; margin-bottom: 4px; }
     input, select { width: 100%; padding: 10px 12px; background: #1e1e1e; border: 1px solid #333; border-radius: 7px; color: #eee; font-size: 15px; }
     input:focus, select:focus { outline: none; border-color: #4ade80; }
     input::placeholder { color: #444; }
-
     .row { display: flex; gap: 10px; }
     .row .form-group { flex: 1; }
-
     .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 6px; }
     .btn-primary { background: #4ade80; color: #111; }
     .btn-secondary { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
     .btn:active { opacity: .85; }
-
-    .entry { background: #1a1a1a; border-radius: 8px; padding: 11px 13px; margin-bottom: 8px; border-left: 3px solid #4ade80; }
+    .entry { background: #1a1a1a; border-radius: 8px; padding: 13px; margin-bottom: 10px; border-left: 3px solid #4ade80; }
     .entry.gtg { border-left-color: #60a5fa; }
-    .entry-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .entry-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
     .entry-title { font-size: 14px; font-weight: 600; }
-    .entry-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .entry-meta { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
     .entry-date { font-size: 12px; color: #555; }
-    .entry-detail { font-size: 13px; color: #888; margin-top: 4px; }
-    .del { background: none; border: none; color: #444; cursor: pointer; font-size: 19px; line-height: 1; padding: 0 2px; }
+    .entry-detail { font-size: 13px; color: #888; margin-top: 8px; line-height: 1.5; }
+    .del { background: none; border: none; color: #444; cursor: pointer; font-size: 19px; line-height: 1; padding: 0 4px; }
     .del:hover { color: #f87171; }
-
     .prog-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .prog-table th { text-align: left; color: #666; font-weight: 500; padding: 4px 8px 6px; border-bottom: 1px solid #2a2a2a; }
+    .prog-table th { text-align: left; color: #666; font-weight: 500; padding: 6px 8px 8px; border-bottom: 1px solid #2a2a2a; }
     .prog-table td { padding: 7px 8px; border-bottom: 1px solid #1e1e1e; }
     .prog-table tr:last-child td { border-bottom: none; }
-    .prog-block { background: #1a1a1a; border-radius: 8px; overflow: hidden; margin-bottom: 4px; }
-
-    .cal-hero { margin-bottom: 10px; }
-    .cal-total { font-size: 32px; font-weight: 700; line-height: 1; }
-    .cal-sub { font-size: 13px; color: #666; margin-top: 3px; }
-    .cal-bar-wrap { background: #222; border-radius: 6px; height: 10px; margin: 10px 0 4px; overflow: hidden; }
-    .cal-bar { height: 100%; background: #4ade80; border-radius: 6px; transition: width .3s; max-width: 100%; }
-    .cal-bar.over { background: #f87171; }
-    .cal-markers { display: flex; justify-content: space-between; font-size: 11px; color: #555; }
-    .cal-entry { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; border-radius: 7px; padding: 10px 12px; margin-bottom: 6px; }
-    .cal-name { font-size: 14px; }
-    .cal-right { display: flex; align-items: center; gap: 10px; }
-    .cal-kcal { font-size: 14px; font-weight: 600; color: #4ade80; }
-
+    .prog-block { background: #1a1a1a; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
     .empty { color: #444; font-size: 14px; padding: 12px 0; }
-    .badge { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 99px; background: #1e3a2a; color: #4ade80; margin-left: 6px; vertical-align: middle; }
+    .badge { display: inline-block; font-size: 11px; padding: 3px 8px; border-radius: 999px; background: #1e3a2a; color: #4ade80; margin-left: 6px; vertical-align: middle; }
   </style>
 </head>
 <body>
-
 <nav>
   <button class="active" data-tab="logger" onclick="showTab(this)">Logger</button>
+  <button data-tab="generator" onclick="showTab(this)">Générateur</button>
   <button data-tab="progression" onclick="showTab(this)">Progression</button>
-  <button data-tab="nutrition" onclick="showTab(this)">Nutrition</button>
+  <button data-tab="exos" onclick="showTab(this)">Exercices</button>
 </nav>
-
 <main>
-
-  <!-- LOGGER -->
   <section id="logger" class="active">
     <h2>Logger une séance</h2>
-
-    <div class="form-group">
-      <label>Date</label>
-      <input type="date" id="s-date">
-    </div>
-    <div class="form-group">
-      <label>Exercice</label>
-      <select id="s-exo">
-        <option>Tractions</option>
-        <option>Pompes surélevées</option>
-        <option>Pompes diamant</option>
-        <option>Dips</option>
-      </select>
-    </div>
+    <div class="form-group"><label>Date</label><input type="date" id="s-date"></div>
     <div class="row">
-      <div class="form-group">
-        <label>Séries</label>
-        <input type="number" id="s-series" min="1" placeholder="3">
-      </div>
-      <div class="form-group">
-        <label>Reps</label>
-        <input type="number" id="s-reps" min="1" placeholder="8">
-      </div>
+      <div class="form-group"><label>Jours de repos avant</label><input type="number" id="s-days" min="0" placeholder="Auto" readonly></div>
+      <div class="form-group"><label>Note libre</label><input type="text" id="s-note" placeholder="Tempo, ressenti, focus…"></div>
     </div>
-    <div class="row">
-      <div class="form-group">
-        <label>Charge (kg)</label>
-        <input type="number" id="s-charge" min="0" step="0.5" placeholder="0">
-      </div>
-      <div class="form-group">
-        <label>Tempo</label>
-        <select id="s-tempo">
-          <option value="normal">Normal</option>
-          <option value="lent">Lent (5s descente)</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn btn-primary" onclick="logSeance()">Enregistrer</button>
-    <button class="btn btn-secondary" onclick="logGTG()">Marquer GTG (jour de repos)</button>
-
+    <div id="logger-body"></div>
+    <button class="btn btn-secondary" onclick="addLoggerExercise()">Ajouter un exercice</button>
+    <button class="btn btn-primary" onclick="saveSession()">Enregistrer la séance</button>
+    <button class="btn btn-secondary" onclick="saveRestDay()">Marquer repos / GTG</button>
     <h3>Séances récentes</h3>
     <div id="recent-list"></div>
   </section>
-
-  <!-- PROGRESSION -->
+  <section id="generator">
+    <h2>Générateur de séance suivante</h2>
+    <div class="form-group"><label>Jours de repos depuis la dernière séance</label><input type="number" id="g-days" min="0" placeholder="Auto" readonly></div>
+    <button class="btn btn-primary" onclick="generatePlan()">Générer ma séance suivante</button>
+    <div id="generator-output"></div>
+  </section>
   <section id="progression">
-    <h2>Progression</h2>
+    <h2>Progressions</h2>
+    <div id="progression-summary"></div>
     <div id="prog-content"></div>
   </section>
-
-  <!-- NUTRITION -->
-  <section id="nutrition">
-    <h2>Calories du jour</h2>
-    <div id="cal-summary"></div>
-
-    <h3>Ajouter</h3>
+  <section id="exos">
+    <h2>Bibliothèque d'exercices</h2>
+    <div id="library-list"></div>
+    <h3>Ajouter un exercice</h3>
+    <div class="form-group"><label>Nom</label><input type="text" id="e-name" placeholder="Pompes standard"></div>
     <div class="row">
-      <div class="form-group" style="flex:2">
-        <label>Aliment / repas</label>
-        <input type="text" id="n-food" placeholder="Whey, poulet, riz…">
-      </div>
-      <div class="form-group" style="flex:1">
-        <label>kcal</label>
-        <input type="number" id="n-kcal" min="1" placeholder="300">
-      </div>
+      <div class="form-group"><label>Groupe</label><select id="e-group"><option value="dos">Dos</option><option value="pectoraux">Pectoraux</option><option value="bras">Bras</option><option value="mixte">Mixte</option></select></div>
+      <div class="form-group"><label>Pattern</label><select id="e-pattern"><option value="horizontal">Horizontal</option><option value="vertical">Vertical</option><option value="iso">Iso</option></select></div>
     </div>
-    <button class="btn btn-primary" onclick="addCal()">Ajouter</button>
-
-    <h3>Entrées du jour</h3>
-    <div id="cal-list"></div>
+    <div class="row">
+      <div class="form-group"><label>Type</label><select id="e-type"><option value="reps">Reps</option><option value="charge">Charge</option><option value="iso">Iso</option></select></div>
+      <div class="form-group"><label>GTG OK</label><select id="e-gtg"><option value="true">Oui</option><option value="false">Non</option></select></div>
+    </div>
+    <div class="row">
+      <div class="form-group"><label>Min reps / temps</label><input type="number" id="e-min" min="0" placeholder="8"></div>
+      <div class="form-group"><label>Max reps / temps</label><input type="number" id="e-max" min="0" placeholder="15"></div>
+    </div>
+    <div class="row">
+      <div class="form-group"><label>Séries cible</label><input type="number" id="e-series" min="1" placeholder="4"></div>
+      <div class="form-group"><label>Tempo excentrique (s)</label><input type="number" id="e-tempo" min="0" placeholder="2"></div>
+    </div>
+    <div class="form-group"><label>Variante plus dure</label><select id="e-variant"><option value="">Aucune</option></select></div>
+    <div class="form-group"><label>Objectif / skill</label><select id="e-objectif"><option value="false">Non</option><option value="true">Oui</option></select></div>
+    <button class="btn btn-primary" onclick="addExerciseLibrary()">Ajouter l'exercice</button>
   </section>
-
 </main>
-
 <script>
-const CAL_MIN = 3200, CAL_MAX = 3500;
-
-// --- utils ---
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+const STORAGE = { exos: 'muscu_exercises', seances: 'muscu_seances', focus: 'muscu_lastFocus' };
+const DEFAULT_EXOS = [
+  { id: 'rowing_australien', nom: 'Rowing australien', groupe: 'dos', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 2, variantePlusDure: 'tractions_pronation', objectif: false, prerequis: null },
+  { id: 'tractions_pronation', nom: 'Tractions pronation', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 6, gtgOk: true, tempoExcentrique: 4, variantePlusDure: 'chin_ups_supination', objectif: false, prerequis: null },
+  { id: 'chin_ups_supination', nom: 'Chin-ups supination', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [4, 8], seriesCible: 5, gtgOk: true, tempoExcentrique: 3, variantePlusDure: 'tractions_c2b', objectif: false, prerequis: null },
+  { id: 'tractions_c2b', nom: 'Tractions C2B', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 5, gtgOk: false, tempoExcentrique: 3, variantePlusDure: 'muscle_up', objectif: false, prerequis: null },
+  { id: 'archer_pullups', nom: 'Archer pull-ups', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 5, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: true, prerequis: null },
+  { id: 'pompes_surelevees', nom: 'Pompes surélevées', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [10, 20], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null },
+  { id: 'pompes_standard', nom: 'Pompes standard', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 5, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_declinees', objectif: false, prerequis: null },
+  { id: 'pompes_declinees', nom: 'Pompes déclinées', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 5, gtgOk: true, tempoExcentrique: 3, variantePlusDure: 'pompes_archer', objectif: false, prerequis: null },
+  { id: 'dips', nom: 'Dips', groupe: 'pectoraux', pattern: 'vertical', type: 'reps', plageReps: [6, 12], seriesCible: 5, gtgOk: true, tempoExcentrique: 4, variantePlusDure: null, objectif: false, prerequis: null },
+  { id: 'developpe_halteres', nom: 'Développé haltères banc', groupe: 'pectoraux', pattern: 'horizontal', type: 'charge', plageReps: [8, 12], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null },
+  { id: 'pompes_diamant', nom: 'Pompes diamant (triceps)', groupe: 'bras', pattern: 'horizontal', type: 'reps', plageReps: [6, 12], seriesCible: 4, gtgOk: true, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null },
+  { id: 'curl_halteres', nom: 'Curl haltères (biceps)', groupe: 'bras', pattern: 'horizontal', type: 'charge', plageReps: [8, 12], seriesCible: 4, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null },
+  { id: 'muscle_up', nom: 'Muscle-up', groupe: 'mixte', pattern: 'vertical', type: 'reps', plageReps: [1, 5], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: true, prerequis: { 'tractions_pronation': 10, 'dips': 12 } }
+];
+let loggerItems = [];
+let generatedPlan = null;
+function esc(s) { return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 function today() { return new Date().toISOString().slice(0, 10); }
-function load(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }
-function save(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
-
-// --- tabs ---
+function load(key, def) { try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch { return def; } }
+function save(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+function parseDate(date) { return new Date(date + 'T00:00'); }
+function dayDifference(a, b) { return Math.round((parseDate(a) - parseDate(b)) / 86400000); }
+function getExercises() {
+  let exos = load(STORAGE.exos, null);
+  if (!Array.isArray(exos)) { exos = [...DEFAULT_EXOS]; save(STORAGE.exos, exos); return exos; }
+  const existing = {};
+  exos.forEach(e => existing[e.id] = true);
+  DEFAULT_EXOS.forEach(defaultExo => { if (!existing[defaultExo.id]) exos.push(defaultExo); });
+  save(STORAGE.exos, exos);
+  return exos;
+}
+function getSessions() {
+  let sessions = load(STORAGE.seances, null);
+  if (!Array.isArray(sessions)) {
+    const old = load('seances', null);
+    if (Array.isArray(old)) {
+      sessions = migrateOldSessions(old);
+      save(STORAGE.seances, sessions);
+    } else {
+      sessions = [];
+    }
+  }
+  return sessions;
+}
+function saveSessions(sessions) { save(STORAGE.seances, sessions); }
+function migrateOldSessions(old) {
+  let exos = getExercises();
+  const byName = {};
+  exos.forEach(e => { byName[e.nom.toLowerCase()] = e; byName[e.id.toLowerCase()] = e; });
+  const sessions = old.map(entry => {
+    const id = entry.id || Date.now() + Math.floor(Math.random() * 1000);
+    const date = entry.date || today();
+    if (entry.type === 'gtg') {
+      return { id, date, exercices: [], note: 'GTG repos', joursReposAvant: 0, type: 'repos' };
+    }
+    if (Array.isArray(entry.exercices)) {
+      return { ...entry, id, type: entry.type || 'seance' };
+    }
+    if (!entry.exo) {
+      return { id, date, exercices: [], note: 'Séance importée', joursReposAvant: 0, type: 'repos' };
+    }
+    const key = entry.exo.toLowerCase();
+    let exo = byName[key];
+    if (!exo) {
+      const slug = entry.exo.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'exo_' + id;
+      exo = { id: slug, nom: entry.exo, groupe: 'mixte', pattern: 'horizontal', type: entry.charge > 0 ? 'charge' : 'reps', plageReps: [Math.max(1, (entry.reps || 0) - 2), Math.max(entry.reps || 1, (entry.reps || 1) + 2)], seriesCible: entry.series || 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null };
+      exos.push(exo);
+      byName[slug] = exo;
+      byName[exo.nom.toLowerCase()] = exo;
+    }
+    const series = [{ reps: entry.reps || 0, charge: entry.charge || 0 }];
+    return { id, date, exercices: [{ exoId: exo.id, series, tempo: entry.tempo || 'normal', note: '' }], joursReposAvant: 0 };
+  });
+  save(STORAGE.exos, exos);
+  return sessions;
+}
+function init() {
+  getExercises();
+  getSessions();
+  document.getElementById('s-date').value = today();
+  updateLoggerDayCount();
+  renderLogger();
+  renderRecent();
+  renderGenerator();
+  renderProgression();
+  renderExercises();
+}
 function showTab(btn) {
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
   btn.classList.add('active');
   const id = btn.dataset.tab;
   document.getElementById(id).classList.add('active');
-  if (id === 'progression') renderProg();
-  if (id === 'nutrition') renderNutrition();
-  if (id === 'logger') renderRecent();
+  if (id === 'progression') renderProgression();
+  if (id === 'exos') renderExercises();
+  if (id === 'logger') renderLogger();
+  if (id === 'generator') renderGenerator();
 }
-
-// --- séances ---
-function logSeance() {
+function renderExerciseOptions(selectedId) {
+  return getExercises().map(exo => `<option value="${esc(exo.id)}" ${exo.id === selectedId ? 'selected' : ''}>${esc(exo.nom)}</option>`).join('');
+}
+function renderSeriesRows(item, index) {
+  return item.series.map((set, seriesIndex) => `
+    <div class="row" style="margin-bottom:8px;">
+      <div class="form-group"><label>Reps / temps</label><input type="number" min="0" value="${esc(set.reps)}" onchange="updateLoggerSeries(${index}, ${seriesIndex}, 'reps', this.value)"></div>
+      <div class="form-group"><label>Charge</label><input type="number" min="0" step="0.5" value="${esc(set.charge)}" onchange="updateLoggerSeries(${index}, ${seriesIndex}, 'charge', this.value)"></div>
+      <button class="del" style="align-self:flex-end;margin-top:24px;" onclick="removeLoggerSeries(${index}, ${seriesIndex})">×</button>
+    </div>`).join('');
+}
+function buildLoggerItem(item, index) {
+  return `
+    <div class="entry" data-index="${index}">
+      <div class="entry-head">
+        <span class="entry-title">Exercice ${index + 1}</span>
+        <button class="del" onclick="removeLoggerExercise(${index})">×</button>
+      </div>
+      <div class="form-group">
+        <label>Exercice</label>
+        <select onchange="updateLoggerField(${index}, 'exoId', this.value)">${renderExerciseOptions(item.exoId)}</select>
+      </div>
+      <div class="row">
+        <div class="form-group"><label>Tempo</label><select onchange="updateLoggerField(${index}, 'tempo', this.value)"><option value="normal" ${item.tempo === 'normal' ? 'selected' : ''}>Normal</option><option value="lent" ${item.tempo === 'lent' ? 'selected' : ''}>Lent</option></select></div>
+        <div class="form-group"><label>Note</label><input type="text" value="${esc(item.note)}" oninput="updateLoggerField(${index}, 'note', this.value)"></div>
+      </div>
+      <div id="series-block-${index}">${renderSeriesRows(item, index)}</div>
+      <button class="btn btn-secondary" type="button" onclick="addLoggerSeries(${index})">Ajouter une série</button>
+    </div>`;
+}
+function renderLogger(plan) {
+  if (plan && plan.exercices) {
+    loggerItems = plan.exercices.map(ex => ({ exoId: ex.exoId, tempo: ex.tempo || 'normal', note: ex.note || '', series: ex.seriesRows ? ex.seriesRows.map(s => ({ reps: s.reps, charge: s.charge })) : ex.series.map(s => ({ reps: s.reps, charge: s.charge })) }));
+    document.getElementById('s-note').value = plan.note || '';
+  }
+  if (!loggerItems.length) {
+    loggerItems = [{ exoId: getExercises()[0]?.id || '', tempo: 'normal', note: '', series: [{ reps: '', charge: '' }] }];
+  }
+  const body = document.getElementById('logger-body');
+  body.innerHTML = loggerItems.map((item, index) => buildLoggerItem(item, index)).join('');
+  updateLoggerDayCount();
+}
+function updateLoggerField(index, field, value) {
+  if (!loggerItems[index]) return;
+  loggerItems[index][field] = value;
+}
+function updateLoggerSeries(itemIndex, seriesIndex, field, value) {
+  if (!loggerItems[itemIndex] || !loggerItems[itemIndex].series[seriesIndex]) return;
+  loggerItems[itemIndex].series[seriesIndex][field] = field === 'charge' ? parseFloat(value) || 0 : parseInt(value) || 0;
+}
+function addLoggerExercise() {
+  loggerItems.push({ exoId: getExercises()[0]?.id || '', tempo: 'normal', note: '', series: [{ reps: '', charge: '' }] });
+  renderLogger();
+}
+function removeLoggerExercise(index) {
+  loggerItems.splice(index, 1);
+  renderLogger();
+}
+function addLoggerSeries(itemIndex) {
+  if (!loggerItems[itemIndex]) return;
+  loggerItems[itemIndex].series.push({ reps: '', charge: '' });
+  renderLogger();
+}
+function removeLoggerSeries(itemIndex, seriesIndex) {
+  if (!loggerItems[itemIndex]) return;
+  loggerItems[itemIndex].series.splice(seriesIndex, 1);
+  renderLogger();
+}
+function computeDaysRepos() {
+  const sessions = getSessions().filter(s => s.exercices?.length || s.type === 'repos');
+  if (!sessions.length) return 2;
+  const last = [...sessions].sort((a, b) => b.date.localeCompare(a.date))[0];
+  return Math.max(0, dayDifference(today(), last.date));
+}
+function updateLoggerDayCount() {
+  const days = computeDaysRepos();
+  document.getElementById('s-days').value = days;
+  document.getElementById('g-days').value = days;
+}
+function collectLoggerSession() {
   const date = document.getElementById('s-date').value || today();
-  const exo = document.getElementById('s-exo').value;
-  const series = parseInt(document.getElementById('s-series').value);
-  const reps = parseInt(document.getElementById('s-reps').value);
-  const charge = parseFloat(document.getElementById('s-charge').value) || 0;
-  const tempo = document.getElementById('s-tempo').value;
-
-  if (!series || !reps) { alert('Renseigne séries et reps.'); return; }
-
-  const seances = load('seances', []);
-  seances.push({ id: Date.now(), type: 'seance', date, exo, series, reps, charge, tempo });
-  save('seances', seances);
-
-  document.getElementById('s-series').value = '';
-  document.getElementById('s-reps').value = '';
-  document.getElementById('s-charge').value = '';
-  document.getElementById('s-tempo').value = 'normal';
-  renderRecent();
+  const note = document.getElementById('s-note').value.trim();
+  const joursReposAvant = parseInt(document.getElementById('s-days').value) || 0;
+  const exercices = loggerItems.map(item => ({ exoId: item.exoId, tempo: item.tempo || 'normal', note: item.note || '', series: item.series.map(s => ({ reps: parseInt(s.reps) || 0, charge: parseFloat(s.charge) || 0 })) })).filter(ex => ex.exoId && ex.series.some(s => s.reps || s.charge));
+  return { id: Date.now() + Math.floor(Math.random() * 1000), date, exercices, note, joursReposAvant };
 }
-
-function logGTG() {
+function saveSession() {
+  const session = collectLoggerSession();
+  if (!session.exercices.length) { alert('Ajoute au moins une série valide.'); return; }
+  const sessions = getSessions();
+  sessions.push(session);
+  saveSessions(sessions);
+  alert('Séance enregistrée.');
+  loggerItems = [];
+  renderLogger();
+  renderRecent();
+  renderProgression();
+  renderGenerator();
+}
+function saveRestDay() {
   const date = document.getElementById('s-date').value || today();
-  const seances = load('seances', []);
-  seances.push({ id: Date.now(), type: 'gtg', date });
-  save('seances', seances);
+  const joursReposAvant = parseInt(document.getElementById('s-days').value) || 0;
+  const sessions = getSessions();
+  sessions.push({ id: Date.now() + Math.floor(Math.random() * 1000), date, exercices: [], note: 'Repos / GTG', joursReposAvant, type: 'repos' });
+  saveSessions(sessions);
+  alert('Jour de repos enregistré.');
   renderRecent();
+  renderProgression();
+  renderGenerator();
 }
-
 function deleteEntry(id) {
-  save('seances', load('seances', []).filter(s => s.id !== id));
+  const sessions = getSessions().filter(s => s.id !== id);
+  saveSessions(sessions);
   renderRecent();
-  if (document.getElementById('progression').classList.contains('active')) renderProg();
+  renderProgression();
+  renderGenerator();
 }
-
 function renderRecent() {
   const el = document.getElementById('recent-list');
-  const recent = [...load('seances', [])].reverse().slice(0, 20);
+  const recent = [...getSessions()].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 20);
   if (!recent.length) { el.innerHTML = '<p class="empty">Aucune séance encore.</p>'; return; }
-  el.innerHTML = recent.map(s => {
-    if (s.type === 'gtg') return `
-      <div class="entry gtg">
-        <div class="entry-head">
-          <span class="entry-title">GTG <span class="badge">repos</span></span>
-          <span class="entry-meta">
-            <span class="entry-date">${esc(s.date)}</span>
-            <button class="del" onclick="deleteEntry(${s.id})">×</button>
-          </span>
-        </div>
-      </div>`;
-    const chargeStr = s.charge ? ` · ${s.charge} kg` : '';
-    const tempoStr = s.tempo === 'lent' ? ' · Tempo lent' : '';
+  el.innerHTML = recent.map(session => {
+    if (!session.exercices?.length) {
+      return `
+        <div class="entry gtg">
+          <div class="entry-head">
+            <span class="entry-title">Repos / GTG</span>
+            <span class="entry-meta"><span class="entry-date">${esc(session.date)}</span><button class="del" onclick="deleteEntry(${session.id})">×</button></span>
+          </div>
+          <div class="entry-detail">${esc(session.note || 'Journée de repos')}</div>
+        </div>`;
+    }
+    const details = session.exercices.map(ex => {
+      const exo = getExercises().find(e => e.id === ex.exoId) || { nom: ex.exoId };
+      const series = ex.series.map(s => `${s.reps || 0}${s.charge ? '×' + s.charge + 'kg' : ''}`).join(' / ');
+      return `<div>${esc(exo.nom)} ${esc(series)} ${ex.tempo === 'lent' ? '· Tempo lent' : ''} ${esc(ex.note || '')}</div>`;
+    }).join('');
     return `
       <div class="entry">
         <div class="entry-head">
-          <span class="entry-title">${esc(s.exo)}</span>
-          <span class="entry-meta">
-            <span class="entry-date">${esc(s.date)}</span>
-            <button class="del" onclick="deleteEntry(${s.id})">×</button>
-          </span>
+          <span class="entry-title">${esc(session.exercices.length > 1 ? 'Séance' : getExercises().find(e => e.id === session.exercices[0].exoId)?.nom || 'Séance')}</span>
+          <span class="entry-meta"><span class="entry-date">${esc(session.date)}</span><button class="del" onclick="deleteEntry(${session.id})">×</button></span>
         </div>
-        <div class="entry-detail">${s.series}×${s.reps}${chargeStr}${tempoStr}</div>
+        <div class="entry-detail">${details}</div>
       </div>`;
   }).join('');
 }
-
-// --- progression ---
-const EXOS = ['Tractions', 'Pompes surélevées', 'Pompes diamant', 'Dips'];
-
-function renderProg() {
-  const seances = load('seances', []).filter(s => s.type === 'seance');
-  const el = document.getElementById('prog-content');
-  if (!seances.length) { el.innerHTML = '<p class="empty">Aucune séance enregistrée.</p>'; return; }
-
-  el.innerHTML = EXOS.map(exo => {
-    const entries = seances
-      .filter(s => s.exo === exo)
-      .sort((a, b) => a.date.localeCompare(b.date));
-    if (!entries.length) return `<h3>${esc(exo)}</h3><p class="empty">Pas de données.</p>`;
-    const rows = entries.map(s => {
-      const charge = s.charge ? s.charge + ' kg' : '—';
-      const tempo = s.tempo === 'lent' ? 'Lent' : 'Normal';
-      return `<tr>
-        <td>${esc(s.date)}</td>
-        <td><strong>${s.series}×${s.reps}</strong></td>
-        <td>${charge}</td>
-        <td>${tempo}</td>
-      </tr>`;
+function renderGenerator() {
+  updateLoggerDayCount();
+  const out = document.getElementById('generator-output');
+  if (!generatedPlan) {
+    const daysRepos = computeDaysRepos();
+    out.innerHTML = `<p class="empty">Entrez ${daysRepos} jour(s) de repos et cliquez sur générer pour construire la séance suivante.</p>`;
+    return;
+  }
+  const exercisesHtml = generatedPlan.exercices.map(ex => {
+    const exo = getExercises().find(e => e.id === ex.exoId) || { nom: ex.exoId };
+    const target = ex.type === 'charge' ? `${ex.charge} kg × ${ex.series} × ${ex.reps}` : `${ex.series}×${ex.reps}`;
+    const tempo = ex.tempo === 'lent' ? 'Tempo lent' : 'Tempo normal';
+    return `<div class="entry"><div class="entry-head"><span class="entry-title">${esc(exo.nom)}</span></div><div class="entry-detail">${esc(target)} · ${esc(tempo)}${ex.note ? ' · ' + esc(ex.note) : ''}</div></div>`;
+  }).join('');
+  out.innerHTML = `
+    <div class="prog-block" style="padding:16px;margin-bottom:12px;">
+      <div class="entry-detail">${esc(generatedPlan.justification)}</div>
+      <div class="entry-detail">Durée estimée : ${generatedPlan.duration} min</div>
+    </div>
+    ${exercisesHtml}
+    <button class="btn btn-secondary" onclick="fillLoggerFromPlan()">Pré-remplir le logger</button>`;
+}
+function fillLoggerFromPlan() {
+  if (!generatedPlan) return;
+  loggerItems = generatedPlan.exercices.map(ex => ({ exoId: ex.exoId, tempo: ex.tempo, note: ex.note || '', series: ex.seriesRows.map(s => ({ reps: s.reps, charge: s.charge })) }));
+  document.getElementById('s-note').value = generatedPlan.note || '';
+  renderLogger();
+  showTab(document.querySelector('nav button[data-tab="logger"]'));
+}
+function getLastPerf(exoId) {
+  const sessions = [...getSessions()].sort((a, b) => b.date.localeCompare(a.date));
+  for (const session of sessions) {
+    const entry = (session.exercices || []).find(ex => ex.exoId === exoId);
+    if (entry) return entry;
+  }
+  return null;
+}
+function chooseFocusGroup() {
+  const groups = ['dos', 'pectoraux', 'bras'];
+  const sessions = [...getSessions()].filter(s => s.exercices?.length);
+  if (!sessions.length) return 'dos';
+  const lastFocus = load(STORAGE.focus, 'dos');
+  const lastWorked = { dos: 0, pectoraux: 0, bras: 0 };
+  sessions.forEach(session => {
+    const timestamp = parseDate(session.date).getTime();
+    session.exercices.forEach(ex => {
+      const exo = getExercises().find(e => e.id === ex.exoId);
+      if (exo && lastWorked[exo.groupe] !== undefined) lastWorked[exo.groupe] = Math.max(lastWorked[exo.groupe], timestamp);
+    });
+  });
+  const least = groups.reduce((best, group) => lastWorked[group] < lastWorked[best] ? group : best, groups[0]);
+  const order = groups;
+  const nextAfterLast = order[(order.indexOf(lastFocus) + 1) % order.length];
+  const candidate = least === nextAfterLast ? least : nextAfterLast;
+  save(STORAGE.focus, candidate);
+  return candidate;
+}
+function chooseExerciseBy(filter, exclude = []) {
+  return getExercises().filter(ex => filter(ex) && !exclude.includes(ex.id)).sort((a, b) => (b.objectif - a.objectif) || a.nom.localeCompare(b.nom))[0] || null;
+}
+function buildPlanTarget(exo, stage, isPriority) {
+  const last = getLastPerf(exo.id);
+  const repMin = exo.plageReps[0];
+  const repMax = exo.plageReps[1];
+  let target = { exoId: exo.id, type: exo.type, series: 1, reps: repMin, charge: 0, tempo: exo.tempoExcentrique > 3 ? 'lent' : 'normal', note: '' };
+  if (!last) {
+    if (exo.type === 'charge') target.charge = 0;
+    target.note = 'Nouvel exo';
+  } else {
+    const series = last.series || [];
+    const reps = series.map(s => s.reps || 0);
+    const allAtMax = reps.every(r => r >= repMax);
+    const allAtMin = reps.every(r => r >= repMin);
+    const best = Math.max(0, ...reps);
+    target.charge = exo.type === 'charge' ? (series[0]?.charge || 0) : 0;
+    if (allAtMax) {
+      if (exo.type === 'charge') {
+        target.series = series.length || 1;
+        target.reps = repMin;
+        target.charge = Math.max(0, target.charge + 2.5);
+        target.note = 'Progression charge';
+      } else {
+        if (series.length < exo.seriesCible) {
+          target.series = series.length + 1;
+          target.reps = repMin;
+          target.note = 'Ajout de série';
+        } else if (exo.variantePlusDure) {
+          const variant = getExercises().find(e => e.id === exo.variantePlusDure);
+          if (variant) {
+            const variantTarget = buildPlanTarget(variant, stage, isPriority);
+            variantTarget.note = 'Passage à variante plus dure';
+            return variantTarget;
+          }
+          target.series = exo.seriesCible;
+          target.reps = repMax;
+          target.note = 'Maintien au max';
+        } else {
+          target.series = exo.seriesCible;
+          target.reps = repMax;
+          target.note = 'Maintien au max';
+        }
+      }
+    } else if (allAtMin) {
+      target.series = series.length || 1;
+      target.reps = Math.min(best + 1, repMax);
+      target.note = 'Progression reps';
+    } else {
+      const hardFail = reps.every(r => r < repMin - 1);
+      if (hardFail) {
+        target.series = Math.max(1, series.length - 1);
+        target.reps = Math.max(repMin, best - 1);
+        target.note = 'Réduction après échec';
+      } else {
+        target.series = series.length || 1;
+        target.reps = Math.max(repMin, best);
+        target.note = 'Répéter la cible';
+      }
+    }
+  }
+  if (stage === 'light') {
+    if (exo.type === 'charge') {
+      target.series = Math.max(1, Math.round(target.series * 0.6));
+      target.note += ' Séance légère';
+    } else {
+      target.reps = Math.max(repMin, Math.max(1, Math.round(target.reps * 0.6)));
+      target.note += ' Séance légère';
+    }
+  }
+  if (stage === 'reprise') {
+    if (exo.type === 'charge') target.charge = Math.max(0, Math.round(target.charge * 0.85 * 4) / 4);
+    else target.reps = Math.max(repMin, Math.max(1, Math.round(target.reps * 0.85)));
+    target.note += ' Reprise 85%';
+  }
+  if (stage === 'intensive' && isPriority) target.note += ' Tentative de record';
+  target.seriesRows = Array.from({ length: target.series }, () => ({ reps: target.reps, charge: target.charge || 0 }));
+  return target;
+}
+function muscleUpPrereqsMet() {
+  const muscle = getExercises().find(e => e.id === 'muscle_up');
+  if (!muscle?.prerequis) return false;
+  const sessions = getSessions();
+  const lastByExo = {};
+  sessions.sort((a, b) => a.date.localeCompare(b.date)).forEach(session => { session.exercices?.forEach(ex => { lastByExo[ex.exoId] = ex; }); });
+  return Object.entries(muscle.prerequis).every(([exoId, reps]) => {
+    const perf = lastByExo[exoId];
+    return perf && perf.series.some(s => (s.reps || 0) >= reps);
+  });
+}
+function generatePlan() {
+  const daysRepos = computeDaysRepos();
+  const stage = daysRepos <= 1 ? 'light' : daysRepos >= 10 ? 'reprise' : daysRepos >= 4 ? 'intensive' : 'normal';
+  const focus = chooseFocusGroup();
+  const plan = { exercices: [], justification: '', duration: 0, note: '' };
+  const excluded = [];
+  if (stage === 'intensive' && muscleUpPrereqsMet()) {
+    const muscle = getExercises().find(e => e.id === 'muscle_up');
+    if (muscle) { plan.exercices.push({ exoId: muscle.id, ...buildPlanTarget(muscle, stage, true) }); excluded.push(muscle.id); }
+  }
+  const verticalPull = chooseExerciseBy(exo => exo.groupe === 'dos' && exo.pattern === 'vertical', excluded);
+  if (verticalPull) { plan.exercices.push({ exoId: verticalPull.id, ...buildPlanTarget(verticalPull, stage, focus === 'dos') }); excluded.push(verticalPull.id); }
+  const push = chooseExerciseBy(exo => exo.groupe === 'pectoraux', excluded);
+  if (push) { plan.exercices.push({ exoId: push.id, ...buildPlanTarget(push, stage, focus === 'pectoraux') }); excluded.push(push.id); }
+  const bras = chooseExerciseBy(exo => exo.groupe === 'bras', excluded);
+  if (bras) { plan.exercices.push({ exoId: bras.id, ...buildPlanTarget(bras, stage, focus === 'bras') }); excluded.push(bras.id); }
+  const extra = chooseExerciseBy(exo => exo.groupe === focus && !excluded.includes(exo.id), excluded);
+  if (extra) { plan.exercices.push({ exoId: extra.id, ...buildPlanTarget(extra, stage, true) }); excluded.push(extra.id); }
+  while (plan.exercices.length < 4) {
+    const fill = chooseExerciseBy(exo => !excluded.includes(exo.id), excluded);
+    if (!fill) break;
+    plan.exercices.push({ exoId: fill.id, ...buildPlanTarget(fill, stage, false) });
+    excluded.push(fill.id);
+  }
+  const modeLabel = stage === 'light' ? 'séance légère' : stage === 'normal' ? 'séance normale' : stage === 'intensive' ? 'séance intensive' : 'reprise';
+  const firstPriority = plan.exercices[0] ? getExercises().find(e => e.id === plan.exercices[0].exoId)?.nom : '';
+  plan.justification = `${daysRepos} jour(s) de repos → ${modeLabel}${stage === 'intensive' && firstPriority ? ', tentative de record sur ' + firstPriority : ''}`;
+  plan.duration = 20 + plan.exercices.length * 6 + (stage === 'intensive' ? 5 : 0);
+  plan.note = `Focus ${formatGroup(focus)}.`;
+  generatedPlan = plan;
+  renderGenerator();
+}
+function formatGroup(group) { return group === 'dos' ? 'dos' : group === 'pectoraux' ? 'pectoraux' : group === 'bras' ? 'bras' : group; }
+function renderProgression() {
+  const summary = document.getElementById('progression-summary');
+  const content = document.getElementById('prog-content');
+  const exos = getExercises();
+  const sessions = getSessions();
+  const results = exos.map(exo => {
+    const points = sessions.flatMap(session => {
+      const entry = (session.exercices || []).find(e => e.exoId === exo.id);
+      if (!entry) return [];
+      return [{ date: session.date, metric: computeMetric(exo, entry.series), entry }];
+    }).sort((a, b) => a.date.localeCompare(b.date));
+    const slope = computeSlope(points.slice(-8));
+    return { exo, points, slope };
+  });
+  const progressions = results.filter(r => r.points.length >= 3).sort((a, b) => (b.slope || 0) - (a.slope || 0)).slice(0, 3);
+  const stagnations = results.filter(r => r.points.length >= 3 && (r.slope || 0) <= 0).slice(0, 3);
+  summary.innerHTML = `
+    <div class="prog-block" style="padding:14px; margin-bottom:12px;">
+      <strong>Top progressions</strong>
+      <div>${progressions.length ? progressions.map(r => `${esc(r.exo.nom)} : ${formatMetricValue(r.exo, r.points[r.points.length - 1]?.metric || 0)}`).join('<br>') : '<span class="empty">Pas assez de données</span>'}</div>
+      <strong style="margin-top:10px; display:block;">Stagnations</strong>
+      <div>${stagnations.length ? stagnations.map(r => `${esc(r.exo.nom)} : ${formatMetricValue(r.exo, r.points[r.points.length - 1]?.metric || 0)}`).join('<br>') : '<span class="empty">Aucune stagnation détectée</span>'}</div>
+    </div>`;
+  content.innerHTML = results.map(r => renderExoProgress(r.exo, r.points, r.slope)).join('');
+}
+function computeMetric(exo, series) {
+  if (!series || !series.length) return 0;
+  if (exo.type === 'charge') return Math.max(...series.map(s => (s.charge || 0) * (1 + (s.reps || 0) / 30)));
+  if (exo.type === 'iso') return series.reduce((sum, s) => sum + (s.reps || 0), 0);
+  return series.reduce((sum, s) => sum + (s.reps || 0), 0);
+}
+function formatMetricValue(exo, value) {
+  if (exo.type === 'charge') return `${Math.round(value * 10) / 10} kg`;
+  if (exo.type === 'iso') return `${Math.round(value)} s`;
+  return `${Math.round(value)} reps`;
+}
+function computeSlope(points) {
+  if (points.length < 2) return 0;
+  const n = points.length;
+  const meanX = (n - 1) / 2;
+  const meanY = points.reduce((sum, p) => sum + p.metric, 0) / n;
+  let num = 0, den = 0;
+  points.forEach((p, i) => {
+    const dx = i - meanX;
+    num += dx * (p.metric - meanY);
+    den += dx * dx;
+  });
+  return den ? num / den : 0;
+}
+function renderExoProgress(exo, points, slope) {
+  const lines = points.map(p => `${esc(p.date)} : ${formatMetricValue(exo, p.metric)}`).join('<br>');
+  const graph = renderGraph(exo, points, slope);
+  const note = points.length < 3 ? '<div class="empty">Données insuffisantes pour projection.</div>' : '';
+  return `
+    <h3>${esc(exo.nom)}</h3>
+    <div class="prog-block" style="padding:12px;">
+      <div class="entry-detail">${lines || 'Pas de données'}</div>
+      ${graph}
+      ${note}
+    </div>`;
+}
+function renderGraph(exo, points, slope) {
+  const width = 520; const height = 220; const padding = 40;
+  if (!points.length) return '<div class="empty">Pas de données.</div>';
+  const values = points.map(p => p.metric);
+  const maxValue = Math.max(...values, 1);
+  const yMin = 0;
+  const yMax = Math.max(maxValue * 1.2, 1);
+  const count = points.length;
+  const xStep = (width - padding * 2) / Math.max(count - 1, 1);
+  const pointSvg = points.map((p, index) => {
+    const x = padding + index * xStep;
+    const y = height - padding - ((p.metric - yMin) / (yMax - yMin)) * (height - padding * 2);
+    return `<circle cx="${x}" cy="${y}" r="4" fill="#4ade80"></circle>`;
+  }).join('');
+  let path = '';
+  if (count > 1) {
+    path = points.map((p, index) => {
+      const x = padding + index * xStep;
+      const y = height - padding - ((p.metric - yMin) / (yMax - yMin)) * (height - padding * 2);
+      return `${index === 0 ? 'M' : 'L'}${x} ${y}`;
+    }).join(' ');
+  }
+  let projectionSvg = '';
+  if (count >= 3) {
+    const planEntry = generatedPlan?.exercices.find(e => e.exoId === exo.id) || null;
+    const targetMetric = planEntry ? computeMetric(exo, planEntry.seriesRows || []) : null;
+    const predicted = [];
+    const slopeValue = slope || 0;
+    if (planEntry && targetMetric !== null) {
+      predicted.push({ x: padding + count * xStep, yVal: targetMetric });
+      predicted.push({ x: padding + (count + 1) * xStep, yVal: targetMetric + slopeValue });
+      predicted.push({ x: padding + (count + 2) * xStep, yVal: targetMetric + 2 * slopeValue });
+    } else {
+      for (let i = 1; i <= 3; i += 1) {
+        const yVal = points[count - 1].metric + slopeValue * i;
+        predicted.push({ x: padding + (count - 1 + i) * xStep, yVal });
+      }
+    }
+    const projPath = predicted.map((p, i) => {
+      const y = height - padding - ((p.yVal - yMin) / (yMax - yMin)) * (height - padding * 2);
+      return `${i === 0 ? 'M' : 'L'}${p.x} ${y}`;
+    }).join(' ');
+    projectionSvg = `<path d="${projPath}" fill="none" stroke="#60a5fa" stroke-width="2" stroke-dasharray="6 6"></path>` + predicted.map(p => {
+      const y = height - padding - ((p.yVal - yMin) / (yMax - yMin)) * (height - padding * 2);
+      return `<circle cx="${p.x}" cy="${y}" r="3" fill="#60a5fa"></circle>`;
     }).join('');
-    return `
-      <h3>${esc(exo)}</h3>
-      <div class="prog-block">
-        <table class="prog-table">
-          <tr><th>Date</th><th>Séries×Reps</th><th>Charge</th><th>Tempo</th></tr>
-          ${rows}
-        </table>
-      </div>`;
+  }
+  const yAxis = Array.from({ length: 5 }, (_, i) => {
+    const y = padding + i * ((height - padding * 2) / 4);
+    const value = Math.round((yMax - ((y - padding) / (height - padding * 2)) * (yMax - yMin)));
+    return `<text x="6" y="${y + 4}" fill="#777" font-size="11">${formatMetricValue(exo, value)}</text><line x1="${padding}" y1="${y}" x2="${width - padding}" y2="${y}" stroke="#222" stroke-width="1"></line>`;
   }).join('');
+  return `
+    <svg viewBox="0 0 ${width} ${height}" width="100%" style="background:#111; border-radius:12px;">
+      <rect x="0" y="0" width="${width}" height="${height}" fill="#111"></rect>
+      ${yAxis}
+      ${path ? `<path d="${path}" fill="none" stroke="#4ade80" stroke-width="2"></path>` : ''}
+      ${pointSvg}
+      ${projectionSvg}
+      <text x="${padding}" y="${height - 12}" fill="#aaa" font-size="11">${esc(points[0].date)}</text>
+      <text x="${width - padding - 80}" y="${height - 12}" fill="#aaa" font-size="11">${esc(points[points.length - 1].date)}</text>
+      ${points.length >= 3 ? `<text x="${width - padding - 220}" y="${padding + 16}" fill="#60a5fa" font-size="11">Tendance indicative</text>` : ''}
+    </svg>`;
 }
-
-// --- nutrition ---
-function addCal() {
-  const food = document.getElementById('n-food').value.trim();
-  const kcal = parseInt(document.getElementById('n-kcal').value);
-  if (!food || !kcal || kcal < 1) { alert('Renseigne aliment et calories.'); return; }
-
-  const key = 'cal_' + today();
-  const entries = load(key, []);
-  entries.push({ id: Date.now(), food, kcal });
-  save(key, entries);
-
-  document.getElementById('n-food').value = '';
-  document.getElementById('n-kcal').value = '';
-  renderNutrition();
-}
-
-function deleteCal(id) {
-  const key = 'cal_' + today();
-  save(key, load(key, []).filter(e => e.id !== id));
-  renderNutrition();
-}
-
-function renderNutrition() {
-  const key = 'cal_' + today();
-  const entries = load(key, []);
-  const total = entries.reduce((s, e) => s + e.kcal, 0);
-  const pct = CAL_MAX > 0 ? Math.min((total / CAL_MAX) * 100, 100) : 0;
-  const over = total > CAL_MAX;
-  const ok = total >= CAL_MIN && total <= CAL_MAX;
-  const status = ok ? ' ✓' : over ? ' — dépassé' : '';
-
-  document.getElementById('cal-summary').innerHTML = `
-    <div class="cal-hero">
-      <div class="cal-total">${total} kcal</div>
-      <div class="cal-sub">Cible : ${CAL_MIN}–${CAL_MAX} kcal${status}</div>
-    </div>
-    <div class="cal-bar-wrap">
-      <div class="cal-bar${over ? ' over' : ''}" style="width:${pct}%"></div>
-    </div>
-    <div class="cal-markers"><span>${CAL_MIN}</span><span>${CAL_MAX}</span></div>`;
-
-  const el = document.getElementById('cal-list');
-  if (!entries.length) { el.innerHTML = '<p class="empty">Aucune entrée aujourd\'hui.</p>'; return; }
-  el.innerHTML = entries.map(e => `
-    <div class="cal-entry">
-      <span class="cal-name">${esc(e.food)}</span>
-      <span class="cal-right">
-        <span class="cal-kcal">${e.kcal} kcal</span>
-        <button class="del" onclick="deleteCal(${e.id})">×</button>
-      </span>
+function renderExercises() {
+  const library = document.getElementById('library-list');
+  const exos = getExercises();
+  library.innerHTML = exos.map(ex => `
+    <div class="entry">
+      <div class="entry-head"><span class="entry-title">${esc(ex.nom)}</span><span class="badge">${formatGroup(ex.groupe)}</span></div>
+      <div class="entry-detail">Type: ${esc(ex.type)} · ${esc(ex.pattern)} · ${ex.plageReps[0]}-${ex.plageReps[1]} reps · Séries ${ex.seriesCible} · Tempo ${ex.tempoExcentrique}s${ex.gtgOk ? ' · GTG OK' : ''}${ex.objectif ? ' · Objectif' : ''}</div>
     </div>`).join('');
+  const variantSelect = document.getElementById('e-variant');
+  variantSelect.innerHTML = '<option value="">Aucune</option>' + exos.map(ex => `<option value="${esc(ex.id)}">${esc(ex.nom)}</option>`).join('');
 }
-
-// --- init ---
-document.getElementById('s-date').value = today();
-renderRecent();
+function addExerciseLibrary() {
+  const nom = document.getElementById('e-name').value.trim();
+  if (!nom) { alert('Nom requis.'); return; }
+  const exos = getExercises();
+  const id = nom.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'exo_' + Date.now();
+  if (exos.some(e => e.id === id)) { alert('Un exercice existe déjà avec ce nom.'); return; }
+  const exo = {
+    id,
+    nom,
+    groupe: document.getElementById('e-group').value,
+    pattern: document.getElementById('e-pattern').value,
+    type: document.getElementById('e-type').value,
+    plageReps: [parseInt(document.getElementById('e-min').value) || 0, parseInt(document.getElementById('e-max').value) || 0],
+    seriesCible: parseInt(document.getElementById('e-series').value) || 1,
+    gtgOk: document.getElementById('e-gtg').value === 'true',
+    tempoExcentrique: parseInt(document.getElementById('e-tempo').value) || 2,
+    variantePlusDure: document.getElementById('e-variant').value || null,
+    objectif: document.getElementById('e-objectif').value === 'true',
+    prerequis: null
+  };
+  exos.push(exo);
+  save(STORAGE.exos, exos);
+  renderExercises();
+  document.getElementById('e-name').value = '';
+  alert('Exercice ajouté.');
+}
+window.onload = init;
 </script>
 </body>
 </html>
