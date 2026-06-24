@@ -1,0 +1,25 @@
+{
+  "name": "Muscu Tracker",
+  "short_name": "Muscu",
+  "description": "Suivi programme musculation poids de corps et charges légères",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#1a1a1a",
+  "background_color": "#111111",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
