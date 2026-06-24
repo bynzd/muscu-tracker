@@ -17,9 +17,10 @@
     h3 { font-size: 13px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: .05em; margin: 24px 0 10px; }
     .form-group { margin-bottom: 11px; }
     label { display: block; font-size: 12px; color: #777; margin-bottom: 4px; }
-    input, select { width: 100%; padding: 10px 12px; background: #1e1e1e; border: 1px solid #333; border-radius: 7px; color: #eee; font-size: 15px; }
-    input:focus, select:focus { outline: none; border-color: #4ade80; }
-    input::placeholder { color: #444; }
+    input, select, textarea { width: 100%; padding: 10px 12px; background: #1e1e1e; border: 1px solid #333; border-radius: 7px; color: #eee; font-size: 15px; }
+    textarea { min-height: 120px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #4ade80; }
+    input::placeholder, textarea::placeholder { color: #444; }
     .row { display: flex; gap: 10px; }
     .row .form-group { flex: 1; }
     .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 6px; }
@@ -35,6 +36,8 @@
     .entry-detail { font-size: 13px; color: #888; margin-top: 8px; line-height: 1.5; }
     .del { background: none; border: none; color: #444; cursor: pointer; font-size: 19px; line-height: 1; padding: 0 4px; }
     .del:hover { color: #f87171; }
+    .edit { background: none; border: none; color: #4ade80; cursor: pointer; font-size: 15px; line-height: 1; padding: 0 4px; }
+    .edit:hover { color: #86efac; }
     .prog-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     .prog-table th { text-align: left; color: #666; font-weight: 500; padding: 6px 8px 8px; border-bottom: 1px solid #2a2a2a; }
     .prog-table td { padding: 7px 8px; border-bottom: 1px solid #1e1e1e; }
@@ -61,7 +64,8 @@
     </div>
     <div id="logger-body"></div>
     <button class="btn btn-secondary" onclick="addLoggerExercise()">Ajouter un exercice</button>
-    <button class="btn btn-primary" onclick="saveSession()">Enregistrer la séance</button>
+    <button class="btn btn-primary" id="save-session-btn" onclick="saveSession()">Enregistrer la séance</button>
+    <button class="btn btn-secondary" type="button" id="cancel-edit-btn" style="display:none;" onclick="cancelEdit()">Annuler la modification</button>
     <button class="btn btn-secondary" onclick="saveRestDay()">Marquer repos / GTG</button>
     <h3>Séances récentes</h3>
     <div id="recent-list"></div>
@@ -104,24 +108,38 @@
   </section>
 </main>
 <script>
-const STORAGE = { exos: 'muscu_exercises', seances: 'muscu_seances', focus: 'muscu_lastFocus' };
+const STORAGE = { exos: 'muscu_exercises', seances: 'muscu_seances', focus: 'muscu_lastFocus', athlete: 'muscu_athlete' };
 const DEFAULT_EXOS = [
   { id: 'rowing_australien', nom: 'Rowing australien', groupe: 'dos', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 2, variantePlusDure: 'tractions_pronation', objectif: false, prerequis: null },
   { id: 'tractions_pronation', nom: 'Tractions pronation', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 6, gtgOk: true, tempoExcentrique: 4, variantePlusDure: 'chin_ups_supination', objectif: false, prerequis: null },
+  { id: 'tractions_pronation_large', nom: 'Tractions pronation large', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 6, gtgOk: true, tempoExcentrique: 4, variantePlusDure: null, objectif: false, prerequis: null },
   { id: 'chin_ups_supination', nom: 'Chin-ups supination', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [4, 8], seriesCible: 5, gtgOk: true, tempoExcentrique: 3, variantePlusDure: 'tractions_c2b', objectif: false, prerequis: null },
   { id: 'tractions_c2b', nom: 'Tractions C2B', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 5, gtgOk: false, tempoExcentrique: 3, variantePlusDure: 'muscle_up', objectif: false, prerequis: null },
   { id: 'archer_pullups', nom: 'Archer pull-ups', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 5, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: true, prerequis: null },
-  { id: 'pompes_surelevees', nom: 'Pompes surélevées', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [10, 20], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null },
+  { id: 'pompes_larges_plates', nom: 'Pompes larges plates', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [12, 20], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null },
+  { id: 'pompes_surelevees_45cm', nom: 'Pompes surélevées 45cm', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [12, 18], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null },
+  { id: 'pompes_surelevees_75cm', nom: 'Pompes surélevées 75cm', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [10, 16], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null },
   { id: 'pompes_standard', nom: 'Pompes standard', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 5, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_declinees', objectif: false, prerequis: null },
+  { id: 'pompes_serrees', nom: 'Pompes serrées', groupe: 'triceps', pattern: 'horizontal', type: 'reps', plageReps: [6, 12], seriesCible: 4, gtgOk: true, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null },
   { id: 'pompes_declinees', nom: 'Pompes déclinées', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 5, gtgOk: true, tempoExcentrique: 3, variantePlusDure: 'pompes_archer', objectif: false, prerequis: null },
   { id: 'dips', nom: 'Dips', groupe: 'pectoraux', pattern: 'vertical', type: 'reps', plageReps: [6, 12], seriesCible: 5, gtgOk: true, tempoExcentrique: 4, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'developpe_halteres', nom: 'Développé haltères banc', groupe: 'pectoraux', pattern: 'horizontal', type: 'charge', plageReps: [8, 12], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'pompes_diamant', nom: 'Pompes diamant (triceps)', groupe: 'bras', pattern: 'horizontal', type: 'reps', plageReps: [6, 12], seriesCible: 4, gtgOk: true, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null },
+  { id: 'developpe_couche_5kg', nom: 'Développé couché 5kg', groupe: 'pectoraux', pattern: 'horizontal', type: 'charge', plageReps: [8, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null },
+  { id: 'elevations_laterales_5kg', nom: 'Élévations latérales 5kg', groupe: 'epaules', pattern: 'horizontal', type: 'reps', plageReps: [12, 18], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null },
+  { id: 'curl_disques_5kg', nom: 'Curl disques 5kg', groupe: 'bras', pattern: 'horizontal', type: 'charge', plageReps: [10, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null },
+  { id: 'extensions_triceps', nom: 'Extensions triceps couché', groupe: 'triceps', pattern: 'horizontal', type: 'charge', plageReps: [10, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null },
+  { id: 'gainage_frontal_sec', nom: 'Gainage frontal sec', groupe: 'abdos', pattern: 'iso', type: 'iso', plageReps: [30, 120], seriesCible: 4, gtgOk: false, tempoExcentrique: 0, variantePlusDure: null, objectif: false, prerequis: null },
+  { id: 'gainage_lateral', nom: 'Gainage latéral', groupe: 'abdos', pattern: 'iso', type: 'iso', plageReps: [20, 90], seriesCible: 3, gtgOk: false, tempoExcentrique: 0, variantePlusDure: null, objectif: false, prerequis: null },
+  { id: 'crunch_classiques', nom: 'Crunch classiques', groupe: 'abdos', pattern: 'horizontal', type: 'reps', plageReps: [15, 30], seriesCible: 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null },
+  { id: 'crunch_obliques', nom: 'Crunch obliques', groupe: 'abdos', pattern: 'horizontal', type: 'reps', plageReps: [12, 25], seriesCible: 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null },
+  { id: 'releves_genoux_suspendus', nom: 'Relevés de genoux suspendus', groupe: 'abdos', pattern: 'vertical', type: 'reps', plageReps: [6, 15], seriesCible: 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null },
+  { id: 'pompes_diamant', nom: 'Pompes diamant', groupe: 'triceps', pattern: 'horizontal', type: 'reps', plageReps: [6, 12], seriesCible: 4, gtgOk: true, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null },
   { id: 'curl_halteres', nom: 'Curl haltères (biceps)', groupe: 'bras', pattern: 'horizontal', type: 'charge', plageReps: [8, 12], seriesCible: 4, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null },
   { id: 'muscle_up', nom: 'Muscle-up', groupe: 'mixte', pattern: 'vertical', type: 'reps', plageReps: [1, 5], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: true, prerequis: { 'tractions_pronation': 10, 'dips': 12 } }
 ];
 let loggerItems = [];
 let generatedPlan = null;
+let editingSessionId = null;
+let editingSessionType = 'seance';
 function esc(s) { return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 function today() { return new Date().toISOString().slice(0, 10); }
 function load(key, def) { try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch { return def; } }
@@ -184,7 +202,7 @@ function migrateOldSessions(old) {
 }
 function init() {
   getExercises();
-  getSessions();
+  seedAthleteAndSessions();
   document.getElementById('s-date').value = today();
   updateLoggerDayCount();
   renderLogger();
@@ -192,6 +210,91 @@ function init() {
   renderGenerator();
   renderProgression();
   renderExercises();
+}
+function seedAthleteAndSessions() {
+  const raw = {
+    athlete: { nom: 'Alexis', poids_kg: 68, taille_cm: 178, objectif: 'prise_de_masse' },
+    seances: [
+      { id: 1, date: '2026-06-03', lieu: 'maison', exercices: [
+          { nom: 'tractions_pronation', series: [2,2,4,4] },
+          { nom: 'pompes_larges_plates', series: [20,20,20,16] },
+          { nom: 'pompes_serrees', series: [8,7,6] },
+          { nom: 'gainage_frontal_sec', series: [60,60,60] }
+        ] },
+      { id: 2, date: '2026-06-06', lieu: 'maison', exercices: [
+          { nom: 'tractions_pronation', series: [3,3,3,3,2] },
+          { nom: 'pompes_surélevées_45cm', series: [15,15,20,15] },
+          { nom: 'curl_disques_5kg', series: [15,15,12,20] },
+          { nom: 'extensions_triceps', series: [15,15,15,13] },
+          { nom: 'gainage_frontal_sec', series: [120,90] }
+        ] },
+      { id: 3, date: '2026-06-09', lieu: 'maison', exercices: [
+          { nom: 'tractions_pronation', series: [3,3,3,3,2] },
+          { nom: 'developpe_couche_5kg', series: [15,15,15,20] },
+          { nom: 'pompes_surélevées_45cm', series: [15,15,20,15] },
+          { nom: 'elevations_laterales_5kg', series: [15,15,15] },
+          { nom: 'curl_disques_5kg', series: [15,15,15] },
+          { nom: 'gainage_frontal_sec', series: [150,75] }
+        ] },
+      { id: 4, date: '2026-06-12', lieu: 'maison', exercices: [
+          { nom: 'tractions_pronation', series: [3,3,2,2,2] },
+          { nom: 'developpe_couche_5kg', series: [15,15,20,30] },
+          { nom: 'pompes_surélevées_75cm', series: [12,12,12,16] },
+          { nom: 'elevations_laterales_5kg', series: [15,15,20] },
+          { nom: 'curl_disques_5kg', series: [15,15,25] },
+          { nom: 'releves_genoux_suspendus', series: [10] },
+          { nom: 'gainage_frontal_sec', series: [180,75,120] }
+        ] },
+      { id: 5, date: '2026-06-15', lieu: 'maison', exercices: [
+          { nom: 'tractions_pronation', series: [3,3,3,3,3,2] },
+          { nom: 'developpe_couche_5kg', series: [15,15,15,30] },
+          { nom: 'pompes_surélevées_45cm', series: [15,15,15,19] },
+          { nom: 'elevations_laterales_5kg', series: [15,15,15] },
+          { nom: 'curl_disques_5kg', series: [15,15,15] },
+          { nom: 'gainage_frontal_sec', series: [120,90] }
+        ] },
+      { id: 6, date: '2026-06-18', lieu: 'street_workout', exercices: [
+          { nom: 'tractions_pronation_large', series: [3,2,2,2,1,1] },
+          { nom: 'dips', series: [10,7,6,5] },
+          { nom: 'pompes_larges_plates', series: [15,15,11] },
+          { nom: 'gainage_frontal_sec', series: [120,90] },
+          { nom: 'crunch_classiques', series: [60,60] },
+          { nom: 'crunch_obliques', series: [80] }
+        ] },
+      { id: 7, date: '2026-06-22', lieu: 'maison', exercices: [
+          { nom: 'tractions_pronation', series: [3,3,3,3,3,3,2] },
+          { nom: 'pompes_surélevées_45cm', series: [15,15,15,12] },
+          { nom: 'pompes_diamant', series: [6,6,6] },
+          { nom: 'elevations_laterales_5kg', series: [15,15,15] },
+          { nom: 'curl_disques_5kg', series: [15,15,15,15] },
+          { nom: 'gainage_frontal_sec', series: [150,60,120] }
+        ] }
+    ]
+  };
+  save(STORAGE.athlete, raw.athlete);
+  const exos = getExercises();
+  const byKey = {};
+  exos.forEach(ex => { byKey[normalizeName(ex.id)] = ex; byKey[normalizeName(ex.nom)] = ex; });
+  const sessions = raw.seances.map(entry => {
+    const exercices = (Array.isArray(entry.exercices) ? entry.exercices : []).map(item => {
+      const key = normalizeName(item.nom);
+      let exo = byKey[key];
+      if (!exo) {
+        exo = buildExerciseFromName(item.nom);
+        if (exos.some(e => e.id === exo.id)) {
+          exo.id = `${exo.id}_${Date.now()}`;
+        }
+        exos.push(exo);
+        byKey[normalizeName(exo.id)] = exo;
+        byKey[normalizeName(exo.nom)] = exo;
+      }
+      const series = Array.isArray(item.series) ? item.series.map(value => ({ reps: parseInt(value) || 0, charge: 0 })) : [];
+      return { exoId: exo.id, tempo: exo.type === 'iso' ? 'lent' : 'normal', note: '', series };
+    }).filter(ex => ex.series.some(s => s.reps || s.charge));
+    return { id: entry.id, date: entry.date, exercices, note: entry.lieu ? `Lieu: ${entry.lieu}` : '', joursReposAvant: 0, type: 'seance' };
+  });
+  save(STORAGE.exos, exos);
+  saveSessions(sessions);
 }
 function showTab(btn) {
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
@@ -207,10 +310,29 @@ function showTab(btn) {
 function renderExerciseOptions(selectedId) {
   return getExercises().map(exo => `<option value="${esc(exo.id)}" ${exo.id === selectedId ? 'selected' : ''}>${esc(exo.nom)}</option>`).join('');
 }
+function normalizeName(name) {
+  return String(name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+}
+function buildExerciseFromName(nom) {
+  const label = String(nom || '').trim();
+  const id = normalizeName(label);
+  const lower = label.toLowerCase();
+  const type = /gainage|plank|iso|sec|suspendu/.test(lower) ? 'iso' : /charge|disques|curl|developpe|extensions/.test(lower) ? 'charge' : 'reps';
+  const group = /traction|traction|pull|row|chin|dos/.test(lower) ? 'dos'
+    : /pompe|dip|developpe|elevation|presse/.test(lower) ? 'pectoraux'
+    : /triceps|pompes serr|extensions/.test(lower) ? 'triceps'
+    : /curl|biceps/.test(lower) ? 'bras'
+    : /gainage|crunch|relevé|releves|abdos|suspendus/.test(lower) ? 'abdos'
+    : /elevation|epaules/.test(lower) ? 'epaules'
+    : 'mixte';
+  const pattern = type === 'iso' ? 'iso' : /traction|pull|chin|row/.test(lower) ? 'vertical' : 'horizontal';
+  const plageReps = type === 'iso' ? [20, 120] : /tractions|pull|row/.test(lower) ? [3, 8] : /pompe|dip|developpe|curl|extensions|crunch|releves/.test(lower) ? [6, 20] : [8, 15];
+  return { id, nom: label, groupe: group, pattern, type, plageReps, seriesCible: 4, gtgOk: /pompe|traction|dip|gainage|curl/.test(lower), tempoExcentrique: type === 'iso' ? 0 : 2, variantePlusDure: null, objectif: false, prerequis: null };
+}
 function renderSeriesRows(item, index) {
   return item.series.map((set, seriesIndex) => `
     <div class="row" style="margin-bottom:8px;">
-      <div class="form-group"><label>Reps / temps</label><input type="number" min="0" value="${esc(set.reps)}" onchange="updateLoggerSeries(${index}, ${seriesIndex}, 'reps', this.value)"></div>
+      <div class="form-group"><label>Reps / Temps (sec pour iso)</label><input type="number" min="0" value="${esc(set.reps)}" onchange="updateLoggerSeries(${index}, ${seriesIndex}, 'reps', this.value)"></div>
       <div class="form-group"><label>Charge</label><input type="number" min="0" step="0.5" value="${esc(set.charge)}" onchange="updateLoggerSeries(${index}, ${seriesIndex}, 'charge', this.value)"></div>
       <button class="del" style="align-self:flex-end;margin-top:24px;" onclick="removeLoggerSeries(${index}, ${seriesIndex})">×</button>
     </div>`).join('');
@@ -245,6 +367,7 @@ function renderLogger(plan) {
   const body = document.getElementById('logger-body');
   body.innerHTML = loggerItems.map((item, index) => buildLoggerItem(item, index)).join('');
   updateLoggerDayCount();
+  updateEditModeUI();
 }
 function updateLoggerField(index, field, value) {
   if (!loggerItems[index]) return;
@@ -288,22 +411,60 @@ function collectLoggerSession() {
   const note = document.getElementById('s-note').value.trim();
   const joursReposAvant = parseInt(document.getElementById('s-days').value) || 0;
   const exercices = loggerItems.map(item => ({ exoId: item.exoId, tempo: item.tempo || 'normal', note: item.note || '', series: item.series.map(s => ({ reps: parseInt(s.reps) || 0, charge: parseFloat(s.charge) || 0 })) })).filter(ex => ex.exoId && ex.series.some(s => s.reps || s.charge));
-  return { id: Date.now() + Math.floor(Math.random() * 1000), date, exercices, note, joursReposAvant };
+  return { id: editingSessionId || Date.now() + Math.floor(Math.random() * 1000), date, exercices, note, joursReposAvant, type: editingSessionType || 'seance' };
 }
 function saveSession() {
   const session = collectLoggerSession();
   if (!session.exercices.length) { alert('Ajoute au moins une série valide.'); return; }
   const sessions = getSessions();
-  sessions.push(session);
+  if (editingSessionId) {
+    const index = sessions.findIndex(s => s.id === editingSessionId);
+    if (index !== -1) sessions[index] = session;
+  } else {
+    sessions.push(session);
+  }
   saveSessions(sessions);
-  alert('Séance enregistrée.');
+  alert(editingSessionId ? 'Séance mise à jour.' : 'Séance enregistrée.');
+  cancelEdit();
   loggerItems = [];
   renderLogger();
   renderRecent();
   renderProgression();
   renderGenerator();
 }
+function editSession(id) {
+  const session = getSessions().find(s => s.id === id);
+  if (!session) return;
+  editingSessionId = id;
+  editingSessionType = session.type || 'seance';
+  if (!session.exercices?.length) {
+    alert('Édition des jours de repos non supportée pour l’instant.');
+    editingSessionId = null;
+    editingSessionType = 'seance';
+    return;
+  }
+  loggerItems = session.exercices.map(ex => ({ exoId: ex.exoId, tempo: ex.tempo || 'normal', note: ex.note || '', series: ex.series.map(s => ({ reps: s.reps, charge: s.charge })) }));
+  document.getElementById('s-date').value = session.date;
+  document.getElementById('s-note').value = session.note || '';
+  renderLogger();
+  updateEditModeUI();
+  showTab(document.querySelector('nav button[data-tab="logger"]'));
+}
+function cancelEdit() {
+  editingSessionId = null;
+  editingSessionType = 'seance';
+  loggerItems = [];
+  document.getElementById('s-date').value = today();
+  document.getElementById('s-note').value = '';
+  renderLogger();
+  updateEditModeUI();
+}
+function updateEditModeUI() {
+  document.getElementById('save-session-btn').textContent = editingSessionId ? 'Mettre à jour la séance' : 'Enregistrer la séance';
+  document.getElementById('cancel-edit-btn').style.display = editingSessionId ? 'block' : 'none';
+}
 function saveRestDay() {
+  cancelEdit();
   const date = document.getElementById('s-date').value || today();
   const joursReposAvant = parseInt(document.getElementById('s-days').value) || 0;
   const sessions = getSessions();
@@ -315,6 +476,7 @@ function saveRestDay() {
   renderGenerator();
 }
 function deleteEntry(id) {
+  if (editingSessionId === id) cancelEdit();
   const sessions = getSessions().filter(s => s.id !== id);
   saveSessions(sessions);
   renderRecent();
@@ -331,7 +493,7 @@ function renderRecent() {
         <div class="entry gtg">
           <div class="entry-head">
             <span class="entry-title">Repos / GTG</span>
-            <span class="entry-meta"><span class="entry-date">${esc(session.date)}</span><button class="del" onclick="deleteEntry(${session.id})">×</button></span>
+            <span class="entry-meta"><span class="entry-date">${esc(session.date)}</span><button class="edit" onclick="editSession(${session.id})">✎</button><button class="del" onclick="deleteEntry(${session.id})">×</button></span>
           </div>
           <div class="entry-detail">${esc(session.note || 'Journée de repos')}</div>
         </div>`;
@@ -345,7 +507,7 @@ function renderRecent() {
       <div class="entry">
         <div class="entry-head">
           <span class="entry-title">${esc(session.exercices.length > 1 ? 'Séance' : getExercises().find(e => e.id === session.exercices[0].exoId)?.nom || 'Séance')}</span>
-          <span class="entry-meta"><span class="entry-date">${esc(session.date)}</span><button class="del" onclick="deleteEntry(${session.id})">×</button></span>
+          <span class="entry-meta"><span class="entry-date">${esc(session.date)}</span><button class="edit" onclick="editSession(${session.id})">✎</button><button class="del" onclick="deleteEntry(${session.id})">×</button></span>
         </div>
         <div class="entry-detail">${details}</div>
       </div>`;
@@ -379,6 +541,13 @@ function fillLoggerFromPlan() {
   document.getElementById('s-note').value = generatedPlan.note || '';
   renderLogger();
   showTab(document.querySelector('nav button[data-tab="logger"]'));
+}
+function editExoFromProgression(exoId, pointIndex) {
+  const sessions = getSessions();
+  const exoSessions = sessions.filter(s => s.exercices?.some(ex => ex.exoId === exoId));
+  if (!exoSessions.length) return;
+  const session = exoSessions[exoSessions.length - 1];
+  editSession(session.id);
 }
 function getLastPerf(exoId) {
   const sessions = [...getSessions()].sort((a, b) => b.date.localeCompare(a.date));
@@ -545,7 +714,7 @@ function renderProgression() {
     }).sort((a, b) => a.date.localeCompare(b.date));
     const slope = computeSlope(points.slice(-8));
     return { exo, points, slope };
-  });
+  }).filter(r => r.points.length > 0).sort((a, b) => (b.points.length || 0) - (a.points.length || 0));
   const progressions = results.filter(r => r.points.length >= 3).sort((a, b) => (b.slope || 0) - (a.slope || 0)).slice(0, 3);
   const stagnations = results.filter(r => r.points.length >= 3 && (r.slope || 0) <= 0).slice(0, 3);
   summary.innerHTML = `
@@ -559,12 +728,9 @@ function renderProgression() {
 }
 function computeMetric(exo, series) {
   if (!series || !series.length) return 0;
-  if (exo.type === 'charge') return Math.max(...series.map(s => (s.charge || 0) * (1 + (s.reps || 0) / 30)));
-  if (exo.type === 'iso') return series.reduce((sum, s) => sum + (s.reps || 0), 0);
   return series.reduce((sum, s) => sum + (s.reps || 0), 0);
 }
 function formatMetricValue(exo, value) {
-  if (exo.type === 'charge') return `${Math.round(value * 10) / 10} kg`;
   if (exo.type === 'iso') return `${Math.round(value)} s`;
   return `${Math.round(value)} reps`;
 }
@@ -582,15 +748,27 @@ function computeSlope(points) {
   return den ? num / den : 0;
 }
 function renderExoProgress(exo, points, slope) {
-  const lines = points.map(p => `${esc(p.date)} : ${formatMetricValue(exo, p.metric)}`).join('<br>');
+  if (!points.length) return '';
+  const lastEntry = points[points.length - 1].entry;
+  const seriesTable = lastEntry.series.map((s, i) => `<tr><td>${i+1}</td><td>${s.reps}</td><td>${s.charge ? s.charge + ' kg' : '-'}</td></tr>`).join('');
   const graph = renderGraph(exo, points, slope);
   const note = points.length < 3 ? '<div class="empty">Données insuffisantes pour projection.</div>' : '';
+  const editBtn = `<button class="btn btn-secondary" style="margin-top:8px; font-size:12px; padding:6px;" onclick="editExoFromProgression('${esc(exo.id)}', ${points.length - 1})">Éditer dernière séance</button>`;
   return `
     <h3>${esc(exo.nom)}</h3>
     <div class="prog-block" style="padding:12px;">
-      <div class="entry-detail">${lines || 'Pas de données'}</div>
+      <div class="entry-detail">Dernier : ${formatMetricValue(exo, points[points.length - 1].metric)}</div>
+      <table style="width:100%; font-size:12px; margin-top:8px; border-collapse:collapse;">
+        <tr style="background:#0a0a0a; border-bottom:1px solid #333;">
+          <th style="padding:6px; text-align:left;">Série</th>
+          <th style="padding:6px; text-align:left;">Reps</th>
+          <th style="padding:6px; text-align:left;">Charge</th>
+        </tr>
+        ${seriesTable}
+      </table>
       ${graph}
       ${note}
+      ${editBtn}
     </div>`;
 }
 function renderGraph(exo, points, slope) {
@@ -646,7 +824,7 @@ function renderGraph(exo, points, slope) {
     return `<text x="6" y="${y + 4}" fill="#777" font-size="11">${formatMetricValue(exo, value)}</text><line x1="${padding}" y1="${y}" x2="${width - padding}" y2="${y}" stroke="#222" stroke-width="1"></line>`;
   }).join('');
   return `
-    <svg viewBox="0 0 ${width} ${height}" width="100%" style="background:#111; border-radius:12px;">
+    <svg viewBox="0 0 ${width} ${height}" width="100%" style="background:#111; border-radius:12px; margin-top:12px;">
       <rect x="0" y="0" width="${width}" height="${height}" fill="#111"></rect>
       ${yAxis}
       ${path ? `<path d="${path}" fill="none" stroke="#4ade80" stroke-width="2"></path>` : ''}
@@ -672,7 +850,7 @@ function addExerciseLibrary() {
   const nom = document.getElementById('e-name').value.trim();
   if (!nom) { alert('Nom requis.'); return; }
   const exos = getExercises();
-  const id = nom.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'exo_' + Date.now();
+  const id = normalizeName(nom) || 'exo_' + Date.now();
   if (exos.some(e => e.id === id)) { alert('Un exercice existe déjà avec ce nom.'); return; }
   const exo = {
     id,

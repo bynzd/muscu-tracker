@@ -1,0 +1,16 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^cd /home/amorey/projets/muscu && node -e \"const fs=require\\('fs'\\); const content=fs\\.readFileSync\\('index\\.html','utf8'\\); const vm=require\\('vm'\\); vm\\.runInNewContext\\(content, \\{window:\\{\\}, document:\\{getElementById:\\(\\)=>null\\}\\}\\); console\\.log\\('ok'\\);\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd /home/amorey/projets/muscu && python3 - <<'PY'\nfrom html\\.parser import HTMLParser\nimport pathlib\ntext = pathlib\\.Path\\('index\\.html'\\)\\.read_text\\(\\)\nclass C\\(HTMLParser\\):\n    def __init__\\(self\\):\n        super\\(\\)\\.__init__\\(\\)\n        self\\.script = 0\n    def handle_starttag\\(self, tag, attrs\\):\n        if tag == 'script': self\\.script \\+= 1\np = C\\(\\); p\\.feed\\(text\\)\nprint\\('scripts=', p\\.script\\)\nprint\\('init=', 'window\\.onload = init;' in text\\)\nprint\\('showTab=', 'function showTab' in text\\)\nprint\\('buildPlanTarget=', 'function buildPlanTarget' in text\\)\nPY$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd /home/amorey/projets/muscu && python3 - <<'PY'\nimport re, sys, pathlib\ntext = pathlib\\.Path\\('index\\.html'\\)\\.read_text\\(encoding='utf-8'\\)\nmatch = re\\.search\\(r'<script>\\(\\.\\*\\)</script>', text, flags=re\\.S\\)\nif not match:\n    raise SystemExit\\('No script block'\\)\ncode = match\\.group\\(1\\)\n# remove HTML comments if any\ncode = re\\.sub\\(r'<!--\\.\\*\\?-->', '', code, flags=re\\.S\\)\nimport subprocess, tempfile\nwith tempfile\\.NamedTemporaryFile\\('w', suffix='\\.js', delete=False, encoding='utf-8'\\) as f:\n    f\\.write\\(code\\)\n    tmp = f\\.name\nret = subprocess\\.run\\(\\['node', '--check', tmp\\], capture_output=True, text=True\\)\nprint\\(ret\\.returncode\\)\nprint\\(ret\\.stdout\\)\nprint\\(ret\\.stderr\\)\nPY$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
