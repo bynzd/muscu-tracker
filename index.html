@@ -62,7 +62,7 @@
     <h2>Logger une séance</h2>
     <div class="form-group"><label>Date</label><input type="date" id="s-date"></div>
     <div class="row">
-      <div class="form-group"><label>Jours de repos avant</label><input type="number" id="s-days" min="0" placeholder="Auto" readonly></div>
+      <div class="form-group"><label>Jours de repos avant</label><input type="number" id="s-days" min="0" placeholder="Auto"></div>
       <div class="form-group"><label>Note libre</label><input type="text" id="s-note" placeholder="Tempo, ressenti, focus…"></div>
     </div>
     <div id="logger-body"></div>
@@ -75,7 +75,7 @@
   </section>
   <section id="generator">
     <h2>Générateur de séance suivante</h2>
-    <div class="form-group"><label>Jours de repos depuis la dernière séance</label><input type="number" id="g-days" min="0" placeholder="Auto" readonly></div>
+    <div class="form-group"><label>Jours de repos depuis la dernière séance</label><input type="number" id="g-days" min="0" placeholder="Auto"></div>
     <button class="btn btn-primary" onclick="generatePlan()">Générer ma séance suivante</button>
     <div id="generator-output"></div>
   </section>
