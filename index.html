@@ -48,6 +48,14 @@
     .prog-block { background: #1a1a1a; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
     .empty { color: #444; font-size: 14px; padding: 12px 0; }
     .badge { display: inline-block; font-size: 11px; padding: 3px 8px; border-radius: 999px; background: #1e3a2a; color: #4ade80; margin-left: 6px; vertical-align: middle; }
+    .cat-header { display:flex; align-items:center; gap:8px; padding:13px 14px; background:#1a1a1a; border-radius:8px; cursor:pointer; margin:10px 0 0; user-select:none; border-left:3px solid #4ade80; }
+    .cat-header:active { opacity:.8; }
+    .cat-label { font-size:15px; font-weight:700; color:#4ade80; }
+    .cat-count { font-size:12px; color:#555; margin-left:auto; }
+    .cat-arrow { color:#4ade80; font-size:11px; transition:transform .2s; }
+    .cat-section.open .cat-arrow { transform:rotate(180deg); }
+    .cat-body { display:none; padding-top:4px; }
+    .cat-section.open .cat-body { display:block; }
     #graph-tooltip { display:none; position:fixed; background:#1e293b; border:1px solid #334155; border-radius:10px; padding:12px 14px; font-size:13px; color:#eee; z-index:200; max-width:220px; box-shadow:0 4px 24px rgba(0,0,0,.6); pointer-events:none; }
     #graph-tooltip .tt-date { font-size:11px; color:#4ade80; font-weight:700; margin-bottom:6px; }
     #graph-tooltip .tt-row { display:flex; justify-content:space-between; gap:12px; color:#ccc; padding:2px 0; border-bottom:1px solid #2a3a4a; }
@@ -424,29 +432,36 @@ function updateLoggerDayCount() {
   document.getElementById('s-days').value = days;
   document.getElementById('g-days').value = days;
 }
-function syncLoggerFromDOM() {
-  loggerItems.forEach((item, i) => {
-    const block = document.getElementById('series-block-' + i);
-    if (!block) return;
-    block.querySelectorAll('.row').forEach((row, j) => {
-      if (!item.series[j]) return;
-      const nums = row.querySelectorAll('input[type="number"]');
-      if (nums[0]) item.series[j].reps = nums[0].value;
-      if (nums[1]) item.series[j].charge = nums[1].value;
-    });
-  });
-}
 function collectLoggerSession() {
   const date = document.getElementById('s-date').value || today();
   const note = document.getElementById('s-note').value.trim();
   const joursReposAvant = parseInt(document.getElementById('s-days').value) || 0;
-  const exercices = loggerItems.map(item => ({ exoId: item.exoId, tempo: item.tempo || 'normal', note: item.note || '', series: item.series.map(s => ({ reps: parseInt(s.reps) || 0, charge: parseFloat(s.charge) || 0 })) })).filter(ex => ex.exoId && ex.series.some(s => s.reps || s.charge));
+  const exercices = loggerItems.map((item, i) => {
+    const block = document.getElementById('series-block-' + i);
+    const series = [];
+    if (block) {
+      block.querySelectorAll('.row').forEach(row => {
+        const nums = row.querySelectorAll('input[type="number"]');
+        series.push({ reps: parseInt(nums[0]?.value) || 0, charge: parseFloat(nums[1]?.value) || 0 });
+      });
+    } else {
+      item.series.forEach(s => series.push({ reps: parseInt(s.reps) || 0, charge: parseFloat(s.charge) || 0 }));
+    }
+    return { exoId: item.exoId, tempo: item.tempo || 'normal', note: item.note || '', series };
+  }).filter(ex => ex.exoId && ex.series.some(s => s.reps || s.charge));
   return { id: editingSessionId || Date.now() + Math.floor(Math.random() * 1000), date, exercices, note, joursReposAvant, type: editingSessionType || 'seance' };
 }
 function saveSession() {
-  syncLoggerFromDOM();
   const session = collectLoggerSession();
-  if (!session.exercices.length) { alert('Ajoute au moins une série valide.'); return; }
+  if (!session.exercices.length) {
+    const detail = loggerItems.map((item, i) => {
+      const block = document.getElementById('series-block-' + i);
+      const vals = block ? [...block.querySelectorAll('input[type="number"]')].map(n => n.value).join('/') : '?';
+      return (item.exoId || '(no exo)') + ' [' + vals + ']';
+    }).join(', ');
+    alert('Aucune série valide. Vérifie les reps.\nDétail: ' + detail);
+    return;
+  }
   const sessions = getSessions();
   if (editingSessionId) {
     const index = sessions.findIndex(s => s.id === editingSessionId);
@@ -731,6 +746,10 @@ function generatePlan() {
   generatedPlan = plan;
   renderGenerator();
 }
+function toggleCat(id) {
+  const el = document.getElementById('cat-' + id);
+  if (el) el.classList.toggle('open');
+}
 function formatGroup(group) { return group === 'dos' ? 'dos' : group === 'pectoraux' ? 'pectoraux' : group === 'bras' ? 'bras' : group; }
 function renderProgression() {
   const summary = document.getElementById('progression-summary');
@@ -761,7 +780,14 @@ function renderProgression() {
   content.innerHTML = cats.map(c => {
     const group = grouped[c.id];
     if (!group.length) return '';
-    return `<h3 style="font-size:15px; color:#4ade80; margin:20px 0 8px; text-transform:none; letter-spacing:0;">${c.label}</h3>` + group.map(r => renderExoProgress(r.exo, r.points, r.slope)).join('');
+    return `<div class="cat-section" id="cat-${c.id}">
+      <div class="cat-header" onclick="toggleCat('${c.id}')">
+        <span class="cat-label">${c.label}</span>
+        <span class="cat-count">${group.length} exo${group.length > 1 ? 's' : ''}</span>
+        <span class="cat-arrow">▼</span>
+      </div>
+      <div class="cat-body">${group.map(r => renderExoProgress(r.exo, r.points, r.slope)).join('')}</div>
+    </div>`;
   }).join('');
 }
 function computeMetric(exo, series) {
