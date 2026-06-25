@@ -112,38 +112,41 @@
       <div class="form-group"><label>Tempo excentrique (s)</label><input type="number" id="e-tempo" min="0" placeholder="2"></div>
     </div>
     <div class="form-group"><label>Variante plus dure</label><select id="e-variant"><option value="">Aucune</option></select></div>
-    <div class="form-group"><label>Objectif / skill</label><select id="e-objectif"><option value="false">Non</option><option value="true">Oui</option></select></div>
+    <div class="row">
+      <div class="form-group"><label>Lieu</label><select id="e-lieu"><option value="gtg">GTG</option><option value="street">Street</option><option value="maison">Maison</option></select></div>
+      <div class="form-group"><label>Objectif / skill</label><select id="e-objectif"><option value="false">Non</option><option value="true">Oui</option></select></div>
+    </div>
     <button class="btn btn-primary" onclick="addExerciseLibrary()">Ajouter l'exercice</button>
   </section>
 </main>
 <script>
 const STORAGE = { exos: 'muscu_exercises', seances: 'muscu_seances', focus: 'muscu_lastFocus', athlete: 'muscu_athlete' };
 const DEFAULT_EXOS = [
-  { id: 'rowing_australien', nom: 'Rowing australien', groupe: 'dos', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 2, variantePlusDure: 'tractions_pronation', objectif: false, prerequis: null },
-  { id: 'tractions_pronation', nom: 'Tractions pronation', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 6, gtgOk: true, tempoExcentrique: 4, variantePlusDure: 'chin_ups_supination', objectif: false, prerequis: null },
-  { id: 'tractions_pronation_large', nom: 'Tractions pronation large', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 6, gtgOk: true, tempoExcentrique: 4, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'chin_ups_supination', nom: 'Chin-ups supination', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [4, 8], seriesCible: 5, gtgOk: true, tempoExcentrique: 3, variantePlusDure: 'tractions_c2b', objectif: false, prerequis: null },
-  { id: 'tractions_c2b', nom: 'Tractions C2B', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 5, gtgOk: false, tempoExcentrique: 3, variantePlusDure: 'muscle_up', objectif: false, prerequis: null },
-  { id: 'archer_pullups', nom: 'Archer pull-ups', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 5, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: true, prerequis: null },
-  { id: 'pompes_larges_plates', nom: 'Pompes larges plates', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [12, 20], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null },
-  { id: 'pompes_surelevees_45cm', nom: 'Pompes surélevées 45cm', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [12, 18], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null },
-  { id: 'pompes_surelevees_75cm', nom: 'Pompes surélevées 75cm', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [10, 16], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null },
-  { id: 'pompes_standard', nom: 'Pompes standard', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 5, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_declinees', objectif: false, prerequis: null },
-  { id: 'pompes_serrees', nom: 'Pompes serrées', groupe: 'triceps', pattern: 'horizontal', type: 'reps', plageReps: [6, 12], seriesCible: 4, gtgOk: true, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'pompes_declinees', nom: 'Pompes déclinées', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 5, gtgOk: true, tempoExcentrique: 3, variantePlusDure: 'pompes_archer', objectif: false, prerequis: null },
-  { id: 'dips', nom: 'Dips', groupe: 'pectoraux', pattern: 'vertical', type: 'reps', plageReps: [6, 12], seriesCible: 5, gtgOk: true, tempoExcentrique: 4, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'developpe_couche_5kg', nom: 'Développé couché 5kg', groupe: 'pectoraux', pattern: 'horizontal', type: 'charge', plageReps: [8, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'elevations_laterales_5kg', nom: 'Élévations latérales 5kg', groupe: 'epaules', pattern: 'horizontal', type: 'reps', plageReps: [12, 18], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'curl_disques_5kg', nom: 'Curl disques 5kg', groupe: 'bras', pattern: 'horizontal', type: 'charge', plageReps: [10, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'extensions_triceps', nom: 'Extensions triceps couché', groupe: 'triceps', pattern: 'horizontal', type: 'charge', plageReps: [10, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'gainage_frontal_sec', nom: 'Gainage frontal sec', groupe: 'abdos', pattern: 'iso', type: 'iso', plageReps: [30, 120], seriesCible: 4, gtgOk: false, tempoExcentrique: 0, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'gainage_lateral', nom: 'Gainage latéral', groupe: 'abdos', pattern: 'iso', type: 'iso', plageReps: [20, 90], seriesCible: 3, gtgOk: false, tempoExcentrique: 0, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'crunch_classiques', nom: 'Crunch classiques', groupe: 'abdos', pattern: 'horizontal', type: 'reps', plageReps: [15, 30], seriesCible: 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'crunch_obliques', nom: 'Crunch obliques', groupe: 'abdos', pattern: 'horizontal', type: 'reps', plageReps: [12, 25], seriesCible: 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'releves_genoux_suspendus', nom: 'Relevés de genoux suspendus', groupe: 'abdos', pattern: 'vertical', type: 'reps', plageReps: [6, 15], seriesCible: 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'pompes_diamant', nom: 'Pompes diamant', groupe: 'triceps', pattern: 'horizontal', type: 'reps', plageReps: [6, 12], seriesCible: 4, gtgOk: true, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'curl_halteres', nom: 'Curl haltères (biceps)', groupe: 'bras', pattern: 'horizontal', type: 'charge', plageReps: [8, 12], seriesCible: 4, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null },
-  { id: 'muscle_up', nom: 'Muscle-up', groupe: 'mixte', pattern: 'vertical', type: 'reps', plageReps: [1, 5], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: true, prerequis: { 'tractions_pronation': 10, 'dips': 12 } }
+  { id: 'rowing_australien', nom: 'Rowing australien', groupe: 'dos', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 2, variantePlusDure: 'tractions_pronation', objectif: false, prerequis: null, lieu: 'street' },
+  { id: 'tractions_pronation', nom: 'Tractions pronation', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 6, gtgOk: true, tempoExcentrique: 4, variantePlusDure: 'chin_ups_supination', objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'tractions_pronation_large', nom: 'Tractions pronation large', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 6, gtgOk: true, tempoExcentrique: 4, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'chin_ups_supination', nom: 'Chin-ups supination', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [4, 8], seriesCible: 5, gtgOk: true, tempoExcentrique: 3, variantePlusDure: 'tractions_c2b', objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'tractions_c2b', nom: 'Tractions C2B', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 5, gtgOk: false, tempoExcentrique: 3, variantePlusDure: 'muscle_up', objectif: false, prerequis: null, lieu: 'street' },
+  { id: 'archer_pullups', nom: 'Archer pull-ups', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 5, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: true, prerequis: null, lieu: 'street' },
+  { id: 'pompes_larges_plates', nom: 'Pompes larges plates', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [12, 20], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'pompes_surelevees_45cm', nom: 'Pompes surélevées 45cm', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [12, 18], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null, lieu: 'maison' },
+  { id: 'pompes_surelevees_75cm', nom: 'Pompes surélevées 75cm', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [10, 16], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null, lieu: 'maison' },
+  { id: 'pompes_standard', nom: 'Pompes standard', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 5, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_declinees', objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'pompes_serrees', nom: 'Pompes serrées', groupe: 'triceps', pattern: 'horizontal', type: 'reps', plageReps: [6, 12], seriesCible: 4, gtgOk: true, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'pompes_declinees', nom: 'Pompes déclinées', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 5, gtgOk: true, tempoExcentrique: 3, variantePlusDure: 'pompes_archer', objectif: false, prerequis: null, lieu: 'maison' },
+  { id: 'dips', nom: 'Dips', groupe: 'pectoraux', pattern: 'vertical', type: 'reps', plageReps: [6, 12], seriesCible: 5, gtgOk: true, tempoExcentrique: 4, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'developpe_couche_5kg', nom: 'Développé couché 5kg', groupe: 'pectoraux', pattern: 'horizontal', type: 'charge', plageReps: [8, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
+  { id: 'elevations_laterales_5kg', nom: 'Élévations latérales 5kg', groupe: 'epaules', pattern: 'horizontal', type: 'reps', plageReps: [12, 18], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
+  { id: 'curl_disques_5kg', nom: 'Curl disques 5kg', groupe: 'bras', pattern: 'horizontal', type: 'charge', plageReps: [10, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
+  { id: 'extensions_triceps', nom: 'Extensions triceps couché', groupe: 'triceps', pattern: 'horizontal', type: 'charge', plageReps: [10, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
+  { id: 'gainage_frontal_sec', nom: 'Gainage frontal sec', groupe: 'abdos', pattern: 'iso', type: 'iso', plageReps: [30, 120], seriesCible: 4, gtgOk: false, tempoExcentrique: 0, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
+  { id: 'gainage_lateral', nom: 'Gainage latéral', groupe: 'abdos', pattern: 'iso', type: 'iso', plageReps: [20, 90], seriesCible: 3, gtgOk: false, tempoExcentrique: 0, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
+  { id: 'crunch_classiques', nom: 'Crunch classiques', groupe: 'abdos', pattern: 'horizontal', type: 'reps', plageReps: [15, 30], seriesCible: 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
+  { id: 'crunch_obliques', nom: 'Crunch obliques', groupe: 'abdos', pattern: 'horizontal', type: 'reps', plageReps: [12, 25], seriesCible: 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
+  { id: 'releves_genoux_suspendus', nom: 'Relevés de genoux suspendus', groupe: 'abdos', pattern: 'vertical', type: 'reps', plageReps: [6, 15], seriesCible: 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'street' },
+  { id: 'pompes_diamant', nom: 'Pompes diamant', groupe: 'triceps', pattern: 'horizontal', type: 'reps', plageReps: [6, 12], seriesCible: 4, gtgOk: true, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'curl_halteres', nom: 'Curl haltères (biceps)', groupe: 'bras', pattern: 'horizontal', type: 'charge', plageReps: [8, 12], seriesCible: 4, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
+  { id: 'muscle_up', nom: 'Muscle-up', groupe: 'mixte', pattern: 'vertical', type: 'reps', plageReps: [1, 5], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: true, prerequis: { 'tractions_pronation': 10, 'dips': 12 }, lieu: 'street' }
 ];
 let loggerItems = [];
 let generatedPlan = null;
@@ -158,8 +161,10 @@ function dayDifference(a, b) { return Math.round((parseDate(a) - parseDate(b)) /
 function getExercises() {
   let exos = load(STORAGE.exos, null);
   if (!Array.isArray(exos)) { exos = [...DEFAULT_EXOS]; save(STORAGE.exos, exos); return exos; }
+  const defaultById = {};
+  DEFAULT_EXOS.forEach(e => { defaultById[e.id] = e; });
   const existing = {};
-  exos.forEach(e => existing[e.id] = true);
+  exos.forEach(e => { existing[e.id] = true; if (!e.lieu) e.lieu = defaultById[e.id]?.lieu || 'maison'; });
   DEFAULT_EXOS.forEach(defaultExo => { if (!existing[defaultExo.id]) exos.push(defaultExo); });
   save(STORAGE.exos, exos);
   return exos;
@@ -733,7 +738,14 @@ function renderProgression() {
       <strong style="margin-top:10px; display:block;">Stagnations</strong>
       <div>${stagnations.length ? stagnations.map(r => `${esc(r.exo.nom)} : ${formatMetricValue(r.exo, r.points[r.points.length - 1]?.metric || 0)}`).join('<br>') : '<span class="empty">Aucune stagnation détectée</span>'}</div>
     </div>`;
-  content.innerHTML = results.map(r => renderExoProgress(r.exo, r.points, r.slope)).join('');
+  const cats = [{ id: 'gtg', label: 'GTG' }, { id: 'street', label: 'Street workout' }, { id: 'maison', label: 'Maison' }];
+  const grouped = { gtg: [], street: [], maison: [] };
+  results.forEach(r => { const l = r.exo.lieu || 'maison'; (grouped[l] || grouped.maison).push(r); });
+  content.innerHTML = cats.map(c => {
+    const group = grouped[c.id];
+    if (!group.length) return '';
+    return `<h3 style="font-size:15px; color:#4ade80; margin:20px 0 8px; text-transform:none; letter-spacing:0;">${c.label}</h3>` + group.map(r => renderExoProgress(r.exo, r.points, r.slope)).join('');
+  }).join('');
 }
 function computeMetric(exo, series) {
   if (!series || !series.length) return 0;
@@ -759,7 +771,8 @@ function computeSlope(points) {
 function renderExoProgress(exo, points, slope) {
   if (!points.length) return '';
   const lastEntry = points[points.length - 1].entry;
-  const seriesTable = lastEntry.series.map((s, i) => `<tr><td>${i+1}</td><td>${s.reps}</td><td>${s.charge ? s.charge + ' kg' : '-'}</td></tr>`).join('');
+  const unit = exo.type === 'iso' ? 's' : 'reps';
+  const seriesTable = lastEntry.series.map((s, i) => `<tr><td>${i+1}</td><td>${s.reps} ${unit}</td><td>${s.charge ? s.charge + ' kg' : '-'}</td></tr>`).join('');
   const graph = renderGraph(exo, points, slope);
   const note = points.length < 3 ? '<div class="empty">Données insuffisantes pour projection.</div>' : '';
   const editBtn = `<button class="btn btn-secondary" style="margin-top:8px; font-size:12px; padding:6px;" onclick="editExoFromProgression('${esc(exo.id)}', ${points.length - 1})">Éditer dernière séance</button>`;
@@ -770,7 +783,7 @@ function renderExoProgress(exo, points, slope) {
       <table style="width:100%; font-size:12px; margin-top:8px; border-collapse:collapse;">
         <tr style="background:#0a0a0a; border-bottom:1px solid #333;">
           <th style="padding:6px; text-align:left;">Série</th>
-          <th style="padding:6px; text-align:left;">Reps</th>
+          <th style="padding:6px; text-align:left;">${exo.type === 'iso' ? 'Durée' : 'Reps'}</th>
           <th style="padding:6px; text-align:left;">Charge</th>
         </tr>
         ${seriesTable}
@@ -781,29 +794,34 @@ function renderExoProgress(exo, points, slope) {
     </div>`;
 }
 const _graphData = {};
+function shortDate(d) { return d ? d.slice(5).replace('-', '/') : ''; }
 function renderGraph(exo, points, slope) {
-  const width = 520; const height = 220; const padding = 40;
+  const width = 520; const height = 240; const padTop = 36; const padBot = 62; const padH = 40;
   if (!points.length) return '<div class="empty">Pas de données.</div>';
-  _graphData[exo.id] = points;
+  _graphData[exo.id] = { exo, points };
   const values = points.map(p => p.metric);
   const maxValue = Math.max(...values, 1);
   const yMin = 0;
   const yMax = Math.max(maxValue * 1.2, 1);
   const count = points.length;
-  const xStep = (width - padding * 2) / Math.max(count - 1, 1);
-  const pointSvg = points.map((p, index) => {
-    const x = padding + index * xStep;
-    const y = height - padding - ((p.metric - yMin) / (yMax - yMin)) * (height - padding * 2);
-    return `<circle cx="${x}" cy="${y}" r="14" fill="transparent" style="cursor:pointer;" onclick="showGraphTooltip('${exo.id}',${index},event)"></circle><circle cx="${x}" cy="${y}" r="5" fill="#4ade80" pointer-events="none"></circle>`;
+  const drawH = height - padTop - padBot;
+  const drawW = width - padH * 2;
+  const xStep = drawW / Math.max(count - 1, 1);
+  const yFor = v => padTop + drawH - ((v - yMin) / (yMax - yMin)) * drawH;
+  const xFor = i => padH + i * xStep;
+  const step = Math.max(1, Math.ceil(count / 8));
+  const xLabels = points.map((p, i) => {
+    if (i % step !== 0 && i !== count - 1) return '';
+    const x = xFor(i);
+    const yBase = padTop + drawH + 14;
+    return `<text x="${x}" y="${yBase}" fill="#666" font-size="10" text-anchor="end" transform="rotate(-40,${x},${yBase})">${shortDate(p.date)}</text>`;
+  }).join('');
+  const pointSvg = points.map((p, i) => {
+    const x = xFor(i); const y = yFor(p.metric);
+    return `<circle cx="${x}" cy="${y}" r="16" fill="rgba(0,0,0,0)" pointer-events="all" style="cursor:pointer;" onclick="showGraphTooltip('${exo.id}',${i},event)" ontouchend="showGraphTooltip('${exo.id}',${i},event)"></circle><circle cx="${x}" cy="${y}" r="5" fill="#4ade80" pointer-events="none"></circle>`;
   }).join('');
   let path = '';
-  if (count > 1) {
-    path = points.map((p, index) => {
-      const x = padding + index * xStep;
-      const y = height - padding - ((p.metric - yMin) / (yMax - yMin)) * (height - padding * 2);
-      return `${index === 0 ? 'M' : 'L'}${x} ${y}`;
-    }).join(' ');
-  }
+  if (count > 1) path = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${xFor(i)} ${yFor(p.metric)}`).join(' ');
   let projectionSvg = '';
   if (count >= 3) {
     const planEntry = generatedPlan?.exercices.find(e => e.exoId === exo.id) || null;
@@ -811,66 +829,63 @@ function renderGraph(exo, points, slope) {
     const predicted = [];
     const slopeValue = slope || 0;
     if (planEntry && targetMetric !== null) {
-      predicted.push({ x: padding + count * xStep, yVal: targetMetric });
-      predicted.push({ x: padding + (count + 1) * xStep, yVal: targetMetric + slopeValue });
-      predicted.push({ x: padding + (count + 2) * xStep, yVal: targetMetric + 2 * slopeValue });
+      predicted.push({ x: xFor(count), yVal: targetMetric });
+      predicted.push({ x: xFor(count + 1), yVal: targetMetric + slopeValue });
+      predicted.push({ x: xFor(count + 2), yVal: targetMetric + 2 * slopeValue });
     } else {
-      for (let i = 1; i <= 3; i += 1) {
-        const yVal = points[count - 1].metric + slopeValue * i;
-        predicted.push({ x: padding + (count - 1 + i) * xStep, yVal });
-      }
+      for (let i = 1; i <= 3; i++) predicted.push({ x: xFor(count - 1 + i), yVal: points[count - 1].metric + slopeValue * i });
     }
-    const projPath = predicted.map((p, i) => {
-      const y = height - padding - ((p.yVal - yMin) / (yMax - yMin)) * (height - padding * 2);
-      return `${i === 0 ? 'M' : 'L'}${p.x} ${y}`;
-    }).join(' ');
-    projectionSvg = `<path d="${projPath}" fill="none" stroke="#60a5fa" stroke-width="2" stroke-dasharray="6 6"></path>` + predicted.map(p => {
-      const y = height - padding - ((p.yVal - yMin) / (yMax - yMin)) * (height - padding * 2);
-      return `<circle cx="${p.x}" cy="${y}" r="3" fill="#60a5fa"></circle>`;
-    }).join('');
+    const projPath = predicted.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x} ${yFor(p.yVal)}`).join(' ');
+    projectionSvg = `<path d="${projPath}" fill="none" stroke="#60a5fa" stroke-width="2" stroke-dasharray="6 6"></path>` + predicted.map(p => `<circle cx="${p.x}" cy="${yFor(p.yVal)}" r="3" fill="#60a5fa"></circle>`).join('');
   }
   const yAxis = Array.from({ length: 5 }, (_, i) => {
-    const y = padding + i * ((height - padding * 2) / 4);
-    const value = Math.round((yMax - ((y - padding) / (height - padding * 2)) * (yMax - yMin)));
-    return `<text x="6" y="${y + 4}" fill="#777" font-size="11">${formatMetricValue(exo, value)}</text><line x1="${padding}" y1="${y}" x2="${width - padding}" y2="${y}" stroke="#222" stroke-width="1"></line>`;
+    const y = padTop + i * (drawH / 4);
+    const value = Math.round(yMax - (i / 4) * (yMax - yMin));
+    return `<text x="6" y="${y + 4}" fill="#777" font-size="11">${formatMetricValue(exo, value)}</text><line x1="${padH}" y1="${y}" x2="${width - padH}" y2="${y}" stroke="#222" stroke-width="1"></line>`;
   }).join('');
   return `
-    <svg viewBox="0 0 ${width} ${height}" width="100%" style="background:#111; border-radius:12px; margin-top:12px;">
+    <svg viewBox="0 0 ${width} ${height}" width="100%" style="background:#111; border-radius:12px; margin-top:12px; touch-action:none;">
       <rect x="0" y="0" width="${width}" height="${height}" fill="#111"></rect>
       ${yAxis}
       ${path ? `<path d="${path}" fill="none" stroke="#4ade80" stroke-width="2"></path>` : ''}
       ${pointSvg}
       ${projectionSvg}
-      <text x="${padding}" y="${height - 12}" fill="#aaa" font-size="11">${esc(points[0].date)}</text>
-      <text x="${width - padding - 80}" y="${height - 12}" fill="#aaa" font-size="11">${esc(points[points.length - 1].date)}</text>
-      ${points.length >= 3 ? `<text x="${width - padding - 220}" y="${padding + 16}" fill="#60a5fa" font-size="11">Tendance indicative</text>` : ''}
+      ${xLabels}
+      ${points.length >= 3 ? `<text x="${width - padH - 220}" y="${padTop + 16}" fill="#60a5fa" font-size="11">Tendance indicative</text>` : ''}
     </svg>`;
 }
 function showGraphTooltip(exoId, index, event) {
   event.stopPropagation();
-  const points = _graphData[exoId];
-  if (!points || !points[index]) return;
+  event.preventDefault();
+  const data = _graphData[exoId];
+  if (!data) return;
+  const { exo, points } = data;
+  if (!points[index]) return;
   const p = points[index];
   const series = p.entry?.series || [];
+  const unit = exo.type === 'iso' ? 's' : 'reps';
   const rows = series.map((s, i) => {
     const charge = s.charge ? ` · ${s.charge} kg` : '';
-    return `<div class="tt-row"><span>Série ${i + 1}</span><span>${s.reps} reps${charge}</span></div>`;
+    return `<div class="tt-row"><span>Série ${i + 1}</span><span>${s.reps} ${unit}${charge}</span></div>`;
   }).join('');
   const total = series.reduce((sum, s) => sum + (s.reps || 0), 0);
   document.getElementById('graph-tooltip-content').innerHTML =
-    `<div class="tt-date">${p.date}</div>${rows}<div class="tt-total">Total : ${total} reps</div>`;
+    `<div class="tt-date">${p.date}</div>${rows}<div class="tt-total">Total : ${total} ${unit}</div>`;
   const tt = document.getElementById('graph-tooltip');
   tt.style.display = 'block';
+  const src = event.changedTouches ? event.changedTouches[0] : event;
+  const cx = src.clientX; const cy = src.clientY;
   const margin = 12;
-  let left = event.clientX + margin;
-  let top = event.clientY - tt.offsetHeight / 2;
-  if (left + 230 > window.innerWidth) left = event.clientX - 230 - margin;
+  let left = cx + margin;
+  let top = cy - tt.offsetHeight / 2;
+  if (left + 230 > window.innerWidth) left = cx - 230 - margin;
   if (top < margin) top = margin;
   if (top + tt.offsetHeight + margin > window.innerHeight) top = window.innerHeight - tt.offsetHeight - margin;
   tt.style.left = left + 'px';
   tt.style.top = top + 'px';
 }
 document.addEventListener('click', () => { document.getElementById('graph-tooltip').style.display = 'none'; });
+document.addEventListener('touchend', () => { document.getElementById('graph-tooltip').style.display = 'none'; });
 function renderExercises() {
   const library = document.getElementById('library-list');
   const exos = getExercises();
@@ -900,6 +915,7 @@ function addExerciseLibrary() {
     tempoExcentrique: parseInt(document.getElementById('e-tempo').value) || 2,
     variantePlusDure: document.getElementById('e-variant').value || null,
     objectif: document.getElementById('e-objectif').value === 'true',
+    lieu: document.getElementById('e-lieu').value || 'maison',
     prerequis: null
   };
   exos.push(exo);
