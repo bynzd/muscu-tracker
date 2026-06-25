@@ -48,9 +48,15 @@
     .prog-block { background: #1a1a1a; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
     .empty { color: #444; font-size: 14px; padding: 12px 0; }
     .badge { display: inline-block; font-size: 11px; padding: 3px 8px; border-radius: 999px; background: #1e3a2a; color: #4ade80; margin-left: 6px; vertical-align: middle; }
+    #graph-tooltip { display:none; position:fixed; background:#1e293b; border:1px solid #334155; border-radius:10px; padding:12px 14px; font-size:13px; color:#eee; z-index:200; max-width:220px; box-shadow:0 4px 24px rgba(0,0,0,.6); pointer-events:none; }
+    #graph-tooltip .tt-date { font-size:11px; color:#4ade80; font-weight:700; margin-bottom:6px; }
+    #graph-tooltip .tt-row { display:flex; justify-content:space-between; gap:12px; color:#ccc; padding:2px 0; border-bottom:1px solid #2a3a4a; }
+    #graph-tooltip .tt-row:last-child { border-bottom:none; }
+    #graph-tooltip .tt-total { margin-top:6px; font-size:11px; color:#888; }
   </style>
 </head>
 <body>
+<div id="graph-tooltip"><div id="graph-tooltip-content"></div></div>
 <nav>
   <button class="active" data-tab="logger" onclick="showTab(this)">Logger</button>
   <button data-tab="generator" onclick="showTab(this)">Générateur</button>
@@ -774,9 +780,11 @@ function renderExoProgress(exo, points, slope) {
       ${editBtn}
     </div>`;
 }
+const _graphData = {};
 function renderGraph(exo, points, slope) {
   const width = 520; const height = 220; const padding = 40;
   if (!points.length) return '<div class="empty">Pas de données.</div>';
+  _graphData[exo.id] = points;
   const values = points.map(p => p.metric);
   const maxValue = Math.max(...values, 1);
   const yMin = 0;
@@ -786,7 +794,7 @@ function renderGraph(exo, points, slope) {
   const pointSvg = points.map((p, index) => {
     const x = padding + index * xStep;
     const y = height - padding - ((p.metric - yMin) / (yMax - yMin)) * (height - padding * 2);
-    return `<circle cx="${x}" cy="${y}" r="4" fill="#4ade80"></circle>`;
+    return `<circle cx="${x}" cy="${y}" r="14" fill="transparent" style="cursor:pointer;" onclick="showGraphTooltip('${exo.id}',${index},event)"></circle><circle cx="${x}" cy="${y}" r="5" fill="#4ade80" pointer-events="none"></circle>`;
   }).join('');
   let path = '';
   if (count > 1) {
@@ -838,6 +846,31 @@ function renderGraph(exo, points, slope) {
       ${points.length >= 3 ? `<text x="${width - padding - 220}" y="${padding + 16}" fill="#60a5fa" font-size="11">Tendance indicative</text>` : ''}
     </svg>`;
 }
+function showGraphTooltip(exoId, index, event) {
+  event.stopPropagation();
+  const points = _graphData[exoId];
+  if (!points || !points[index]) return;
+  const p = points[index];
+  const series = p.entry?.series || [];
+  const rows = series.map((s, i) => {
+    const charge = s.charge ? ` · ${s.charge} kg` : '';
+    return `<div class="tt-row"><span>Série ${i + 1}</span><span>${s.reps} reps${charge}</span></div>`;
+  }).join('');
+  const total = series.reduce((sum, s) => sum + (s.reps || 0), 0);
+  document.getElementById('graph-tooltip-content').innerHTML =
+    `<div class="tt-date">${p.date}</div>${rows}<div class="tt-total">Total : ${total} reps</div>`;
+  const tt = document.getElementById('graph-tooltip');
+  tt.style.display = 'block';
+  const margin = 12;
+  let left = event.clientX + margin;
+  let top = event.clientY - tt.offsetHeight / 2;
+  if (left + 230 > window.innerWidth) left = event.clientX - 230 - margin;
+  if (top < margin) top = margin;
+  if (top + tt.offsetHeight + margin > window.innerHeight) top = window.innerHeight - tt.offsetHeight - margin;
+  tt.style.left = left + 'px';
+  tt.style.top = top + 'px';
+}
+document.addEventListener('click', () => { document.getElementById('graph-tooltip').style.display = 'none'; });
 function renderExercises() {
   const library = document.getElementById('library-list');
   const exos = getExercises();
