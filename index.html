@@ -124,27 +124,27 @@ const STORAGE = { exos: 'muscu_exercises', seances: 'muscu_seances', focus: 'mus
 const DEFAULT_EXOS = [
   { id: 'rowing_australien', nom: 'Rowing australien', groupe: 'dos', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 2, variantePlusDure: 'tractions_pronation', objectif: false, prerequis: null, lieu: 'street' },
   { id: 'tractions_pronation', nom: 'Tractions pronation', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 6, gtgOk: true, tempoExcentrique: 4, variantePlusDure: 'chin_ups_supination', objectif: false, prerequis: null, lieu: 'gtg' },
-  { id: 'tractions_pronation_large', nom: 'Tractions pronation large', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 6, gtgOk: true, tempoExcentrique: 4, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'gtg' },
-  { id: 'chin_ups_supination', nom: 'Chin-ups supination', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [4, 8], seriesCible: 5, gtgOk: true, tempoExcentrique: 3, variantePlusDure: 'tractions_c2b', objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'tractions_pronation_large', nom: 'Tractions pronation large', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 6, gtgOk: true, tempoExcentrique: 4, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'street' },
+  { id: 'chin_ups_supination', nom: 'Chin-ups supination', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [4, 8], seriesCible: 5, gtgOk: true, tempoExcentrique: 3, variantePlusDure: 'tractions_c2b', objectif: false, prerequis: null, lieu: 'maison' },
   { id: 'tractions_c2b', nom: 'Tractions C2B', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 5, gtgOk: false, tempoExcentrique: 3, variantePlusDure: 'muscle_up', objectif: false, prerequis: null, lieu: 'street' },
   { id: 'archer_pullups', nom: 'Archer pull-ups', groupe: 'dos', pattern: 'vertical', type: 'reps', plageReps: [3, 6], seriesCible: 5, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: true, prerequis: null, lieu: 'street' },
-  { id: 'pompes_larges_plates', nom: 'Pompes larges plates', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [12, 20], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'pompes_larges_plates', nom: 'Pompes larges plates', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [12, 20], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null, lieu: 'maison' },
   { id: 'pompes_surelevees_45cm', nom: 'Pompes surélevées 45cm', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [12, 18], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null, lieu: 'maison' },
   { id: 'pompes_surelevees_75cm', nom: 'Pompes surélevées 75cm', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [10, 16], seriesCible: 4, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_standard', objectif: false, prerequis: null, lieu: 'maison' },
-  { id: 'pompes_standard', nom: 'Pompes standard', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 5, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_declinees', objectif: false, prerequis: null, lieu: 'gtg' },
-  { id: 'pompes_serrees', nom: 'Pompes serrées', groupe: 'triceps', pattern: 'horizontal', type: 'reps', plageReps: [6, 12], seriesCible: 4, gtgOk: true, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'pompes_standard', nom: 'Pompes standard', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 5, gtgOk: true, tempoExcentrique: 2, variantePlusDure: 'pompes_declinees', objectif: false, prerequis: null, lieu: 'maison' },
+  { id: 'pompes_serrees', nom: 'Pompes militaires', groupe: 'triceps', pattern: 'horizontal', type: 'reps', plageReps: [6, 12], seriesCible: 4, gtgOk: true, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
   { id: 'pompes_declinees', nom: 'Pompes déclinées', groupe: 'pectoraux', pattern: 'horizontal', type: 'reps', plageReps: [8, 15], seriesCible: 5, gtgOk: true, tempoExcentrique: 3, variantePlusDure: 'pompes_archer', objectif: false, prerequis: null, lieu: 'maison' },
-  { id: 'dips', nom: 'Dips', groupe: 'pectoraux', pattern: 'vertical', type: 'reps', plageReps: [6, 12], seriesCible: 5, gtgOk: true, tempoExcentrique: 4, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'dips', nom: 'Dips', groupe: 'pectoraux', pattern: 'vertical', type: 'reps', plageReps: [6, 12], seriesCible: 5, gtgOk: true, tempoExcentrique: 4, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'street' },
   { id: 'developpe_couche_5kg', nom: 'Développé couché 5kg', groupe: 'pectoraux', pattern: 'horizontal', type: 'charge', plageReps: [8, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
   { id: 'elevations_laterales_5kg', nom: 'Élévations latérales 5kg', groupe: 'epaules', pattern: 'horizontal', type: 'reps', plageReps: [12, 18], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
   { id: 'curl_disques_5kg', nom: 'Curl disques 5kg', groupe: 'bras', pattern: 'horizontal', type: 'charge', plageReps: [10, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
   { id: 'extensions_triceps', nom: 'Extensions triceps couché', groupe: 'triceps', pattern: 'horizontal', type: 'charge', plageReps: [10, 15], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
-  { id: 'gainage_frontal_sec', nom: 'Gainage frontal sec', groupe: 'abdos', pattern: 'iso', type: 'iso', plageReps: [30, 120], seriesCible: 4, gtgOk: false, tempoExcentrique: 0, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
-  { id: 'gainage_lateral', nom: 'Gainage latéral', groupe: 'abdos', pattern: 'iso', type: 'iso', plageReps: [20, 90], seriesCible: 3, gtgOk: false, tempoExcentrique: 0, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
-  { id: 'crunch_classiques', nom: 'Crunch classiques', groupe: 'abdos', pattern: 'horizontal', type: 'reps', plageReps: [15, 30], seriesCible: 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
-  { id: 'crunch_obliques', nom: 'Crunch obliques', groupe: 'abdos', pattern: 'horizontal', type: 'reps', plageReps: [12, 25], seriesCible: 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
+  { id: 'gainage_frontal_sec', nom: 'Gainage frontal sec', groupe: 'abdos', pattern: 'iso', type: 'iso', plageReps: [30, 120], seriesCible: 4, gtgOk: false, tempoExcentrique: 0, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'gainage_lateral', nom: 'Gainage latéral', groupe: 'abdos', pattern: 'iso', type: 'iso', plageReps: [20, 90], seriesCible: 3, gtgOk: false, tempoExcentrique: 0, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'crunch_classiques', nom: 'Crunch classiques', groupe: 'abdos', pattern: 'horizontal', type: 'reps', plageReps: [15, 30], seriesCible: 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'crunch_obliques', nom: 'Crunch obliques', groupe: 'abdos', pattern: 'horizontal', type: 'reps', plageReps: [12, 25], seriesCible: 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'gtg' },
   { id: 'releves_genoux_suspendus', nom: 'Relevés de genoux suspendus', groupe: 'abdos', pattern: 'vertical', type: 'reps', plageReps: [6, 15], seriesCible: 3, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'street' },
-  { id: 'pompes_diamant', nom: 'Pompes diamant', groupe: 'triceps', pattern: 'horizontal', type: 'reps', plageReps: [6, 12], seriesCible: 4, gtgOk: true, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'gtg' },
+  { id: 'pompes_diamant', nom: 'Pompes diamant', groupe: 'triceps', pattern: 'horizontal', type: 'reps', plageReps: [6, 12], seriesCible: 4, gtgOk: true, tempoExcentrique: 3, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
   { id: 'curl_halteres', nom: 'Curl haltères (biceps)', groupe: 'bras', pattern: 'horizontal', type: 'charge', plageReps: [8, 12], seriesCible: 4, gtgOk: false, tempoExcentrique: 2, variantePlusDure: null, objectif: false, prerequis: null, lieu: 'maison' },
   { id: 'muscle_up', nom: 'Muscle-up', groupe: 'mixte', pattern: 'vertical', type: 'reps', plageReps: [1, 5], seriesCible: 4, gtgOk: false, tempoExcentrique: 3, variantePlusDure: null, objectif: true, prerequis: { 'tractions_pronation': 10, 'dips': 12 }, lieu: 'street' }
 ];
@@ -164,7 +164,11 @@ function getExercises() {
   const defaultById = {};
   DEFAULT_EXOS.forEach(e => { defaultById[e.id] = e; });
   const existing = {};
-  exos.forEach(e => { existing[e.id] = true; if (!e.lieu) e.lieu = defaultById[e.id]?.lieu || 'maison'; });
+  exos.forEach(e => {
+    existing[e.id] = true;
+    if (!e.lieu) e.lieu = defaultById[e.id]?.lieu || 'maison';
+    if (defaultById[e.id]?.nom) e.nom = defaultById[e.id].nom;
+  });
   DEFAULT_EXOS.forEach(defaultExo => { if (!existing[defaultExo.id]) exos.push(defaultExo); });
   save(STORAGE.exos, exos);
   return exos;
@@ -420,6 +424,18 @@ function updateLoggerDayCount() {
   document.getElementById('s-days').value = days;
   document.getElementById('g-days').value = days;
 }
+function syncLoggerFromDOM() {
+  loggerItems.forEach((item, i) => {
+    const block = document.getElementById('series-block-' + i);
+    if (!block) return;
+    block.querySelectorAll('.row').forEach((row, j) => {
+      if (!item.series[j]) return;
+      const nums = row.querySelectorAll('input[type="number"]');
+      if (nums[0]) item.series[j].reps = nums[0].value;
+      if (nums[1]) item.series[j].charge = nums[1].value;
+    });
+  });
+}
 function collectLoggerSession() {
   const date = document.getElementById('s-date').value || today();
   const note = document.getElementById('s-note').value.trim();
@@ -428,6 +444,7 @@ function collectLoggerSession() {
   return { id: editingSessionId || Date.now() + Math.floor(Math.random() * 1000), date, exercices, note, joursReposAvant, type: editingSessionType || 'seance' };
 }
 function saveSession() {
+  syncLoggerFromDOM();
   const session = collectLoggerSession();
   if (!session.exercices.length) { alert('Ajoute au moins une série valide.'); return; }
   const sessions = getSessions();
@@ -779,7 +796,7 @@ function renderExoProgress(exo, points, slope) {
   return `
     <h3>${esc(exo.nom)}</h3>
     <div class="prog-block" style="padding:12px;">
-      <div class="entry-detail">Dernier : ${formatMetricValue(exo, points[points.length - 1].metric)}</div>
+      <div class="entry-detail">Dernier : ${formatMetricValue(exo, points[points.length - 1].metric)} — <span style="color:#555;">${points[points.length - 1].date}</span></div>
       <table style="width:100%; font-size:12px; margin-top:8px; border-collapse:collapse;">
         <tr style="background:#0a0a0a; border-bottom:1px solid #333;">
           <th style="padding:6px; text-align:left;">Série</th>
