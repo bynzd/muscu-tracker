@@ -238,6 +238,7 @@ function init() {
   renderExercises();
 }
 function seedAthleteAndSessions() {
+  if (Array.isArray(load(STORAGE.seances, null))) return;
   const raw = {
     athlete: { nom: 'Alexis', poids_kg: 68, taille_cm: 178, objectif: 'prise_de_masse' },
     seances: [

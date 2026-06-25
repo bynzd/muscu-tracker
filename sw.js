@@ -1,4 +1,4 @@
-const CACHE = 'muscu-v7';
+const CACHE = 'muscu-v8';
 const ASSETS = [
   './',
   './index.html',
